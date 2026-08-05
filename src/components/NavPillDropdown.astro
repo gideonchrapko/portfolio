@@ -1,0 +1,119 @@
+---
+interface Props {
+  entries: Array<
+    | { label: string; href: string }
+    | {
+        prefix: string;
+        label?: string;
+        href?: string;
+        connector?: boolean;
+        suffix?: string;
+        level?: 'root' | 'category' | 'project';
+      }
+  >;
+  isTree: boolean;
+  /** When true, no absolute positioning (for use inside shared floating dropdown) */
+  embed?: boolean;
+}
+
+const { entries, isTree, embed = false } = Astro.props;
+
+function isTreeEntry(
+  entry: Props['entries'][number],
+): entry is {
+  prefix: string;
+  label?: string;
+  href?: string;
+  connector?: boolean;
+  suffix?: string;
+  level?: 'root' | 'category' | 'project';
+} {
+  return typeof entry === 'object' && 'prefix' in entry;
+}
+
+const dropdownBase = embed
+  ? 'dropdown-tooltip dropdown-tooltip-embed relative z-0 rounded border-0 bg-transparent p-0 shadow-none'
+  : 'dropdown-tooltip absolute left-1/2 top-full z-50 -translate-x-1/2 rounded border border-gray-700 bg-[#0d0d0d] px-5 py-4 shadow-xl transition duration-150 ease-out opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto';
+const treeRow = 'flex items-center gap-[1ch] font-mono text-base leading-none';
+const treeChars = 'shrink-0 select-none font-light text-gray-500 leading-none';
+const treeLineLink =
+  'group/link flex min-w-0 flex-1 items-center gap-[1ch] rounded py-0.5 pr-3 font-mono text-base leading-none text-gray-200 no-underline transition-colors hover:bg-gray-800 hover:text-gray-100';
+---
+
+<div class={dropdownBase} style={embed ? '' : `min-width: ${isTree ? '22rem' : '14rem'}; margin-top: -4px;`}>
+  {
+    isTree ? (
+      <div class="font-mono text-base leading-none">
+        {entries.map((entry) => {
+          if (!isTreeEntry(entry)) return null;
+          if (entry.connector) {
+            return (
+              <div class={`${treeRow} -mx-1`}>
+                <span class={treeChars}>{entry.prefix}</span>
+              </div>
+            );
+          }
+          if (entry.label != null && entry.href != null) {
+            const isCategory = entry.level === 'category';
+            return (
+              <a href={entry.href} class={`${treeRow} ${treeLineLink} -mx-1 first:mt-0`}>
+                <span class={treeChars}>{entry.prefix}</span>
+                <span class={`min-w-0 truncate ${isCategory ? 'text-gray-500' : ''}`}>{entry.label}</span>
+                <span class="ml-auto shrink-0 opacity-0 transition-opacity group-hover/link:opacity-100">→</span>
+              </a>
+            );
+          }
+          return (
+            <div class={treeRow}>
+              <span class={treeChars}>{entry.prefix}</span>
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <div>
+        {entries.map((entry) => {
+          if (isTreeEntry(entry)) return null;
+          return (
+            <a
+              href={entry.href}
+              class="block rounded py-2 px-2 text-base leading-none text-gray-200 no-underline transition-colors hover:bg-gray-800 hover:text-gray-100"
+            >
+              {entry.label}
+            </a>
+          );
+        })}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .dropdown-tooltip-embed::before,
+  .dropdown-tooltip-embed::after {
+    display: none;
+  }
+  .dropdown-tooltip::before,
+  .dropdown-tooltip::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+  }
+  .dropdown-tooltip:hover::before,
+  .dropdown-tooltip:hover::after {
+    opacity: 1;
+  }
+  .dropdown-tooltip::before {
+    top: -7px;
+    border-bottom: 7px solid rgb(55 65 81);
+  }
+  .dropdown-tooltip::after {
+    top: -6px;
+    border-bottom: 6px solid #0d0d0d;
+  }
+</style>

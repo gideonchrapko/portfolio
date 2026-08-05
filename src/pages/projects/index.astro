@@ -1,0 +1,294 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Badge from '../../components/Badge.astro';
+import ProjectBadge from '../../components/ProjectBadge.astro';
+import { getCollection } from 'astro:content';
+import type { CategorySlug } from '../../data/categories';
+import { categoryBySlug } from '../../data/categories';
+import { tags as tagConfig, tagLabelsBySlug } from '../../data/tags';
+
+const allProjects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0),
+);
+
+const categoryOrder = ['engineering', 'motion', 'graphic-design'] as const;
+const categoryLabels: Record<(typeof categoryOrder)[number], string> = {
+  engineering: 'engineering',
+  motion: 'motion',
+  'graphic-design': 'design',
+};
+
+// Server renders all projects; client-side script filters by URL params (for static build)
+const groupedByCategory = categoryOrder
+  .map((cat) => ({
+    category: cat,
+    label: categoryLabels[cat],
+    projects: allProjects.filter((p) => (p.data.category ?? 'graphic-design') === cat),
+  }))
+  .filter((g) => g.projects.length > 0);
+
+// Tags: single source of truth in src/data/tags.ts (use slug in project frontmatter)
+const allTags = tagConfig.map((t) => t.slug);
+const tagLabels = tagLabelsBySlug;
+
+function formatProjectDate(d: Date | undefined): string {
+  if (!d) return '';
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+}
+---
+
+<Layout title="Projects" description="Selected projects — web development, motion, and design." image="/og.png">
+  <div class="px-4 py-8 font-mono">
+    <h1 class="text-2xl font-semibold text-gray-900">Projects</h1>
+    <p id="projects-filter-summary" class="mt-1 text-gray-600">Things I've built.</p>
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      <span class="mr-2 text-sm font-medium text-gray-500">Categories</span>
+      {
+        categoryOrder.map((cat) => (
+          <ProjectBadge
+            param="category"
+            value={cat}
+            label={categoryLabels[cat]}
+            color={categoryBySlug[cat as CategorySlug].badgeColor}
+          />
+        ))
+      }
+    </div>
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <span class="mr-2 text-sm font-medium text-gray-500">Tags</span>
+      {
+        allTags.length > 0 ? (
+          allTags.map((slug) => (
+            <ProjectBadge
+              param="tag"
+              value={slug}
+              label={tagLabels[slug as keyof typeof tagLabels] ?? slug}
+              variant="secondary"
+            />
+          ))
+        ) : (
+          <span class="text-sm text-gray-400">—</span>
+        )
+      }
+    </div>
+    <div class="mt-8" id="projects-list">
+      {
+        groupedByCategory.map((group) => (
+          <section class="projects-category-section mb-12 last:mb-0" data-category={group.category}>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">/{group.label}</h2>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none">
+              {group.projects.map((project) => (
+                <li
+                  class="project-item"
+                  data-category={project.data.category ?? 'graphic-design'}
+                  data-tags={JSON.stringify((project.data.tags ?? []).map((t: string) => t.toLowerCase()))}
+                >
+                  <a
+                    href={`/projects/${project.id}`}
+                    class="project-card group block border border-gray-400/20 rounded-lg overflow-hidden no-underline transition-all duration-200 hover:border-gray-400/60 hover:-translate-y-0.5"
+                  >
+                    <div class="aspect-[16/10] overflow-hidden bg-gray-100">
+                      {(project.data.image ?? project.data.images?.[0]) ? (
+                        <img
+                          src={project.data.image ?? project.data.images[0]}
+                          alt=""
+                          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div class="h-full w-full bg-gray-200" aria-hidden="true" />
+                      )}
+                    </div>
+                    <div class="p-3.5">
+                      <div class="flex items-start justify-between gap-2">
+                        <h3 class="text-sm font-medium text-gray-900 truncate">
+                          {project.data.title}
+                          <span
+                            class="inline-block ml-1 text-xs no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+                            aria-hidden="true"
+                          >
+                            →
+                          </span>
+                        </h3>
+                        {project.data.date && (
+                          <time class="shrink-0 text-[11px] tabular-nums text-gray-500 mt-0.5" aria-hidden="true">
+                            [{formatProjectDate(project.data.date)}]
+                          </time>
+                        )}
+                      </div>
+                      {project.data.description && (
+                        <p class="mt-1.5 text-xs text-gray-600 line-clamp-2 leading-relaxed">
+                          {project.data.description}
+                        </p>
+                      )}
+                      {(project.data.tags ?? []).length > 0 && (
+                        <div class="mt-2.5 flex flex-wrap gap-1" aria-hidden="true">
+                          {(project.data.tags ?? []).map((slug: string) => (
+                            <Badge label={tagLabels[slug as keyof typeof tagLabels] ?? slug} variant="secondary" />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+
+  <script type="application/json" id="projects-page-labels" set:html={JSON.stringify({ categoryLabels, tagLabels })} />
+  <script is:inline>
+    (function () {
+      function applyProjectFilter() {
+        var url = new URL(window.location.href);
+        var selectedTags = url.searchParams.getAll('tag').map(function (t) {
+          return t.toLowerCase();
+        });
+        var selectedCategories = url.searchParams.getAll('category').map(function (c) {
+          return c.toLowerCase();
+        });
+        var labelsEl = document.getElementById('projects-page-labels');
+        var labels = { categoryLabels: {}, tagLabels: {} };
+        if (labelsEl)
+          try {
+            labels = JSON.parse(labelsEl.textContent);
+          } catch (e) {}
+        var summaryParts = [];
+        if (selectedCategories.length)
+          summaryParts.push(
+            selectedCategories
+              .map(function (c) {
+                return labels.categoryLabels[c] || c;
+              })
+              .join(', '),
+          );
+        if (selectedTags.length)
+          summaryParts.push(
+            selectedTags
+              .map(function (t) {
+                return labels.tagLabels[t] || t;
+              })
+              .join(', '),
+          );
+        var summaryEl = document.getElementById('projects-filter-summary');
+        if (summaryEl) summaryEl.textContent = summaryParts.length ? summaryParts.join(' · ') : "Things I've built.";
+        document.querySelectorAll('.project-item').forEach(function (li) {
+          var cat = (li.dataset.category || 'graphic-design').toLowerCase();
+          var tags = [];
+          try {
+            tags = JSON.parse(li.dataset.tags || '[]');
+          } catch (e) {}
+          var matchTags =
+            selectedTags.length === 0 ||
+            selectedTags.every(function (t) {
+              return tags.indexOf(t) >= 0;
+            });
+          var matchCat = selectedCategories.length === 0 || selectedCategories.indexOf(cat) >= 0;
+          li.hidden = !(matchTags && matchCat);
+        });
+        document.querySelectorAll('.projects-category-section').forEach(function (section) {
+          var visible = section.querySelectorAll('.project-item:not([hidden])').length;
+          section.hidden = visible === 0;
+        });
+      }
+      function runFilter() {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyProjectFilter);
+        } else {
+          applyProjectFilter();
+        }
+      }
+      runFilter();
+      window.addEventListener('popstate', applyProjectFilter);
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      var colorMap = {
+        amber: 'bg-amber-400',
+        emerald: 'bg-emerald-400',
+        rose: 'bg-rose-400',
+        sky: 'bg-sky-400',
+        violet: 'bg-violet-400',
+        orange: 'bg-orange-400',
+        lime: 'bg-lime-400',
+        cyan: 'bg-cyan-400',
+        fuchsia: 'bg-fuchsia-400',
+        teal: 'bg-teal-400',
+      };
+      function getToggleUrl(param, value) {
+        var url = new URL(window.location.href);
+        var values = url.searchParams.getAll(param).map(function (v) {
+          return v.toLowerCase();
+        });
+        var valueLower = value.toLowerCase();
+        var next;
+        if (param === 'category') {
+          // Single-select: only one category at a time. Click same = clear; click other = switch.
+          next = values.indexOf(valueLower) >= 0 ? [] : [valueLower];
+        } else {
+          // Tags: multi-select, toggle on/off
+          next =
+            values.indexOf(valueLower) >= 0
+              ? values.filter(function (v) {
+                  return v !== valueLower;
+                })
+              : values.concat(valueLower);
+        }
+        url.searchParams.delete(param);
+        next.forEach(function (v) {
+          url.searchParams.append(param, v);
+        });
+        return url.pathname + url.search;
+      }
+      function syncSelectedState() {
+        var url = new URL(window.location.href);
+        document.querySelectorAll('[data-project-badge]').forEach(function (btn) {
+          var param = btn.dataset.param;
+          var value = btn.dataset.value;
+          var color = btn.dataset.color || 'amber';
+          var variant = btn.dataset.variant || 'secondary';
+          var current = url.searchParams.getAll(param).map(function (v) {
+            return v.toLowerCase();
+          });
+          var selected = current.indexOf(value.toLowerCase()) >= 0;
+          btn.setAttribute('aria-pressed', selected);
+          var bgClass = colorMap[color] || 'bg-amber-400';
+          var allBgClasses = Object.keys(colorMap).map(function (k) {
+            return colorMap[k];
+          });
+          if (selected) {
+            btn.classList.add('ring-2', 'ring-gray-700', 'ring-offset-1', 'text-gray-900', bgClass);
+            btn.classList.remove('opacity-75', 'bg-gray-600', 'text-white');
+            allBgClasses.forEach(function (c) {
+              if (c !== bgClass) btn.classList.remove(c);
+            });
+          } else {
+            btn.classList.remove('ring-2', 'ring-gray-700', 'ring-offset-1', 'text-gray-900');
+            allBgClasses.forEach(function (c) {
+              btn.classList.remove(c);
+            });
+            if (variant === 'secondary') btn.classList.add('bg-gray-600', 'text-white', 'opacity-75');
+          }
+        });
+      }
+      function init() {
+        document.querySelectorAll('[data-project-badge]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            window.location.href = getToggleUrl(btn.dataset.param, btn.dataset.value);
+          });
+        });
+        syncSelectedState();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+      window.addEventListener('popstate', syncSelectedState);
+    })();
+  </script>
+</Layout>

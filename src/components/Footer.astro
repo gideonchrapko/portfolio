@@ -1,0 +1,94 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer-bar fixed bottom-0 left-0 right-0 z-40 h-10 w-full bg-[#FAFAFA] font-mono text-xs text-gray-500">
+  <div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-4">
+    <div class="group/network relative">
+      <button
+        type="button"
+        class="rounded px-2 py-1 text-left text-gray-500 no-underline transition-colors hover:bg-gray-200/80 hover:text-gray-700"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-label="Show network stats"
+      >
+        Network
+      </button>
+      <div
+        class="absolute bottom-full left-0 mb-1 min-w-[12rem] rounded border border-gray-300 bg-white px-3 py-2 shadow-lg opacity-0 pointer-events-none transition-opacity duration-150 group-hover/network:opacity-100 group-hover/network:pointer-events-auto"
+        role="tooltip"
+      >
+        <div class="space-y-1 text-gray-700">
+          <p id="footer-finished">Finished: —</p>
+          <p id="footer-transferred">Transferred: —</p>
+          <p id="footer-requests">Requests: —</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <a
+        href="https://github.com/gideonchrapko"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-gray-500 no-underline transition-colors hover:text-gray-800">GitHub</a
+      >
+      <a
+        href="https://www.linkedin.com/in/gideon-chrapko-230220a0/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-gray-500 no-underline transition-colors hover:text-gray-800">LinkedIn</a
+      >
+      <span>©{year}</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  }
+
+  function formatLoadTime(ms: number): string {
+    if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
+    return `${Math.round(ms)}ms`;
+  }
+
+  function updateFooter() {
+    try {
+      const finishedEl = document.getElementById('footer-finished');
+      if (finishedEl) {
+        const nav = performance.getEntriesByType?.('navigation')?.[0] as PerformanceNavigationTiming | undefined;
+        const loadMs =
+          nav?.duration ??
+          (performance.timing?.loadEventEnd && performance.timing?.navigationStart
+            ? performance.timing.loadEventEnd - performance.timing.navigationStart
+            : 0);
+        finishedEl.textContent = loadMs > 0 ? `Finished: ${formatLoadTime(loadMs)}` : 'Finished: —';
+      }
+
+      const entries = performance.getEntriesByType?.('resource');
+      if (!entries?.length) return;
+
+      let transferred = 0;
+      for (const e of entries) {
+        const size = (e as PerformanceResourceTiming).transferSize;
+        if (size != null && size > 0) transferred += size;
+      }
+
+      const transferredEl = document.getElementById('footer-transferred');
+      const requestsEl = document.getElementById('footer-requests');
+      if (transferredEl) transferredEl.textContent = `Transferred: ${formatBytes(transferred)}`;
+      if (requestsEl) requestsEl.textContent = `Requests: ${entries.length}`;
+    } catch (_) {}
+  }
+
+  if (document.readyState === 'complete') {
+    updateFooter();
+  } else {
+    window.addEventListener('load', () => setTimeout(updateFooter, 0));
+  }
+</script>

@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Experience from '../components/Experience.astro';
+import CodeSidebar from '../components/CodeSidebar.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('pages', 'home');
+if (!entry) throw new Error('Missing content: pages/home.md');
+const { Content } = await render(entry);
+const description = entry.data.description ?? 'Front-end developer with a background in design.';
+---
+
+<Layout description={description} image="/og.png">
+  <div class="px-4 py-8 font-mono">
+    <div id="intro" class="scroll-mt-24">
+      <h1 class="text-7xl font-bold text-gray-900">/{entry.data.title}</h1>
+      <p class="mt-1 flex flex-wrap items-center gap-2 text-5xl font-bold">
+        <span
+          class="inline-flex flex-shrink-0 items-center justify-center rounded-3xl bg-black px-2 py-1 text-2xl text-white"
+          >✦</span
+        >
+        <span>Design.</span>
+        <span
+          class="inline-flex flex-shrink-0 items-center justify-center rounded-3xl bg-black px-2 py-1 text-xl text-white"
+          >{'</>'}</span
+        >
+        <span>Code.</span>
+      </p>
+      <div
+        class="mt-6 space-y-4 text-xl [&_a]:text-blue-600 [&_a]:underline [&_h2]:mt-6 [&_h2]:text-xl [&_ul]:list-disc [&_ul]:pl-6"
+      >
+        <Content />
+      </div>
+    </div>
+    <p class="mt-6">
+      <a
+        href="/projects"
+        class="font-bold text-gray-600 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600"
+        >[View work]</a
+      >
+    </p>
+    <div class="experience-wrapper mt-10 flex flex-col lg:flex-row lg:items-start lg:gap-10">
+      <div class="min-w-0 flex-1">
+        <Experience />
+      </div>
+      <CodeSidebar />
+    </div>
+  </div>
+</Layout>

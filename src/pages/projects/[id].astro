@@ -1,0 +1,298 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CategoryBadge from '../../components/CategoryBadge.astro';
+import LottiePlayer from '../../components/LottiePlayer.astro';
+import { getCollection, render } from 'astro:content';
+import type { CategorySlug } from '../../data/categories';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  return projects.map((p) => ({ params: { id: p.id }, props: { entry: p } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  description,
+  date,
+  category,
+  roles,
+  tools,
+  overview,
+  sections,
+  images,
+  videos,
+  url,
+  showVideoControls,
+  image,
+} = entry.data;
+const videoControls = showVideoControls ?? false;
+const categorySlug = (category ?? 'graphic-design') as CategorySlug;
+const shareDescription = description ?? overview?.slice(0, 160) ?? title;
+const shareImage = image ?? images?.[0] ?? undefined;
+
+function sectionId(section: typeof sections[number]): string {
+  if (section.id) return section.id;
+  return section.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function muxPlaybackId(idOrUrl: string): string {
+  if (idOrUrl.startsWith('http')) {
+    const match = idOrUrl.match(/stream\.mux\.com\/([^/?]+)/);
+    return match ? match[1] : idOrUrl;
+  }
+  return idOrUrl;
+}
+---
+
+<Layout title={title} description={shareDescription} image={shareImage}>
+  <article class="px-4 py-8 font-mono">
+    <header>
+      <h1 class="text-2xl font-semibold text-gray-900">{title}</h1>
+      <div class="mt-1 flex flex-wrap items-center gap-2">
+        {date && <span class="text-sm text-gray-500">{date.toLocaleDateString()}</span>}
+        <CategoryBadge category={categorySlug} static />
+      </div>
+      {
+        url && (
+          <p class="mt-3">
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group inline-flex items-center gap-2 rounded px-0.5 text-xl font-semibold text-gray-900 no-underline transition-colors hover:bg-gray-300/40"
+            >
+              <span class="underline decoration-gray-400 hover:decoration-gray-600">View site</span>
+              <span
+                class="inline-block text-xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </a>
+          </p>
+        )
+      }
+      {description && <p class="mt-1 text-gray-600">{description}</p>}
+    </header>
+
+    {/* Hero image */}
+    {
+      image && (
+        <div class="mt-8 -mx-4 sm:-mx-0 sm:rounded-lg overflow-hidden bg-white">
+          <img src={image} alt="" class="w-full object-cover" loading="eager" />
+        </div>
+      )
+    }
+
+    {/* 1.1 Introduction: Role, Tools, Overview */}
+    {
+      (roles?.length || tools?.length || overview) && (
+        <div class="mt-6 space-y-3 text-sm">
+          {roles?.length && (
+            <p>
+              <span class="font-medium text-gray-500">ROLE</span>
+              <br />
+              <span class="text-gray-900">{roles.join(' · ')}</span>
+            </p>
+          )}
+          {tools?.length && (
+            <p>
+              <span class="font-medium text-gray-500">TOOLS</span>
+              <br />
+              <span class="text-gray-900">{tools.join(' · ')}</span>
+            </p>
+          )}
+          {overview && (
+            <div>
+              <p class="font-medium text-gray-500">PROJECT OVERVIEW</p>
+              <p class="mt-1 whitespace-pre-line text-gray-900">{overview}</p>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    {
+      videos?.length || sections?.length || images?.length ? (
+        <div class="mt-10 space-y-10">
+          {videos?.length ? (
+            <div class="w-full space-y-4">
+              {videos.map((video) => {
+                const showControls =
+                  typeof video === 'object' && video.controls !== undefined ? video.controls : videoControls;
+                const attrs = showControls ? { controls: true } : { autoplay: true, muted: true, loop: true };
+                const videoClass = showControls ? 'w-full max-w-[600px] mx-auto block rounded' : 'w-full rounded';
+                if (typeof video === 'object' && video.mux) {
+                  return (
+                    <div class="w-full max-w-[600px] mx-auto">
+                      <mux-player
+                        playback-id={muxPlaybackId(video.mux)}
+                        class="w-full rounded"
+                        stream-type="on-demand"
+                        autoplay={showControls ? undefined : 'muted'}
+                        loop={showControls ? undefined : true}
+                        muted={showControls ? undefined : true}
+                        default-hidden-captions
+                      />
+                    </div>
+                  );
+                }
+                return typeof video === 'string' ? (
+                  <video src={video} class={videoClass} playsinline {...attrs} />
+                ) : (
+                  <video class={videoClass} playsinline {...attrs}>
+                    {video.webm && <source type="video/webm" src={video.webm} />}
+                    {video.mp4 && <source type="video/mp4" src={video.mp4} />}
+                  </video>
+                );
+              })}
+            </div>
+          ) : null}
+
+          {/* Sections (2.1, 2.2, …) with media */}
+          {sections?.length ? (
+            <div class="space-y-16">
+              {sections.map((section) => (
+                <section id={sectionId(section)}>
+                  <h2 class="text-lg font-semibold text-gray-900 scroll-mt-24">
+                    {section.id && `${section.id} - `}
+                    {section.title}
+                  </h2>
+                  {section.description && (
+                    <p class="mt-3 whitespace-pre-line text-sm text-gray-700">{section.description}</p>
+                  )}
+                  {section.link && (
+                    <p class="mt-2">
+                      <a href={section.link} target="_blank" rel="noopener noreferrer" class="text-blue-600 underline">
+                        View link →
+                      </a>
+                    </p>
+                  )}
+                  {section.images?.length === 1 ? (
+                    <div class="mt-12 flex justify-center">
+                      <img
+                        src={section.images[0]}
+                        alt=""
+                        class="w-full max-w-3xl rounded object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : section.images?.length ? (
+                    <div class="project-gallery mt-12">
+                      {section.images.map((src) => (
+                        <div class="project-gallery__item">
+                          <img src={src} alt="" class="w-full h-auto rounded" loading="lazy" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                  {section.videos?.length ? (
+                    <div class="mt-3 space-y-2">
+                      {section.videos.map((video) => {
+                        const showControls =
+                          typeof video === 'object' && video.controls !== undefined ? video.controls : videoControls;
+                        const attrs = showControls ? { controls: true } : { loop: true };
+                        const videoClass = showControls
+                          ? 'w-full max-w-[600px] mx-auto block rounded'
+                          : 'w-full rounded';
+                        if (typeof video === 'object' && video.mux) {
+                          return (
+                            <div class="w-full max-w-[600px] mx-auto">
+                              <mux-player
+                                playback-id={muxPlaybackId(video.mux)}
+                                class="w-full rounded"
+                                stream-type="on-demand"
+                                autoplay={showControls ? undefined : 'muted'}
+                                loop={showControls ? undefined : true}
+                                muted={showControls ? undefined : true}
+                                default-hidden-captions
+                              />
+                            </div>
+                          );
+                        }
+                        return typeof video === 'string' ? (
+                          <video src={video} class={videoClass} playsinline {...attrs} />
+                        ) : (
+                          <video class={videoClass} playsinline {...attrs}>
+                            {video.webm && <source type="video/webm" src={video.webm} />}
+                            {video.mp4 && <source type="video/mp4" src={video.mp4} />}
+                          </video>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                  {section.embed && (
+                    <div class="mt-8 w-full">
+                      <div class="relative w-full overflow-hidden rounded" style="aspect-ratio: 16/9;">
+                        <iframe
+                          src={section.embed}
+                          class="absolute inset-0 h-full w-full border-0"
+                          loading="lazy"
+                          allowfullscreen
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {section.lottie && (
+                    <div class="mt-8">
+                      <LottiePlayer url={section.lottie} />
+                    </div>
+                  )}
+                </section>
+              ))}
+            </div>
+          ) : images?.length ? (
+            <div class="project-gallery">
+              {images.map((src) => (
+                <div class="project-gallery__item">
+                  <img src={src} alt="" class="w-full h-auto rounded" loading="lazy" />
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null
+    }
+
+    {/* Optional markdown body */}
+    <div
+      class="mt-8 space-y-4 [&_a]:text-blue-600 [&_a]:underline [&_h2]:mt-6 [&_h2]:text-xl [&_ul]:list-disc [&_ul]:pl-6"
+    >
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<script>
+  import '@mux/mux-player';
+</script>
+
+<style>
+  mux-player {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .project-gallery {
+    column-count: 2;
+    column-gap: 2rem;
+  }
+  .project-gallery__item {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  .project-gallery__item img {
+    display: block;
+    vertical-align: top;
+  }
+  @media (max-width: 640px) {
+    .project-gallery {
+      column-count: 1;
+      column-gap: 0;
+    }
+  }
+</style>

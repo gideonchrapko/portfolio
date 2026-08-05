@@ -1,0 +1,61 @@
+---
+/**
+ * Project badge: projects-page-only filter badge. Same visual style as Badge.
+ * Click toggles a query param (append/remove), so multiple tags/categories can be selected.
+ */
+interface Props {
+  /** Query param to toggle: 'tag' | 'category' */
+  param: 'tag' | 'category';
+  /** Value for the param (slug) */
+  value: string;
+  /** Display label */
+  label: string;
+  /** Badge color when selected (matches Badge color keys) */
+  color?: 'amber' | 'emerald' | 'rose' | 'sky' | 'violet' | 'orange' | 'lime' | 'cyan' | 'fuchsia' | 'teal';
+  /** Use secondary (gray) style when unselected */
+  variant?: 'default' | 'secondary';
+}
+
+const colorMap: Record<NonNullable<Props['color']>, string> = {
+  amber: 'bg-amber-400',
+  emerald: 'bg-emerald-400',
+  rose: 'bg-rose-400',
+  sky: 'bg-sky-400',
+  violet: 'bg-violet-400',
+  orange: 'bg-orange-400',
+  lime: 'bg-lime-400',
+  cyan: 'bg-cyan-400',
+  fuchsia: 'bg-fuchsia-400',
+  teal: 'bg-teal-400',
+};
+
+const { param, value, label, color = 'amber', variant = 'secondary' } = Astro.props;
+
+const currentValues = Astro.url.searchParams.getAll(param).map((v) => v.toLowerCase());
+const isSelected = currentValues.includes(value.toLowerCase());
+
+const baseClasses =
+  'relative inline-flex cursor-pointer items-center pl-2 pr-1 py-0.5 text-xs font-medium border-0 transition-opacity duration-200 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1';
+const unselectedClasses =
+  variant === 'secondary' ? 'bg-gray-600 text-white opacity-75' : `text-gray-900 ${colorMap[color]}`;
+const cornerClass = isSelected ? colorMap[color] : variant === 'secondary' ? 'bg-gray-500' : colorMap[color];
+---
+
+<button
+  type="button"
+  class:list={[
+    baseClasses,
+    isSelected ? [colorMap[color], 'text-gray-900', 'ring-2', 'ring-gray-700', 'ring-offset-1'] : unselectedClasses,
+  ]}
+  data-project-badge
+  data-param={param}
+  data-value={value}
+  data-color={color}
+  data-variant={variant}
+  aria-pressed={isSelected}
+  aria-label={`${isSelected ? 'Remove' : 'Add'} filter: ${label}`}
+>
+  <span class={`absolute -left-1 -top-1 h-1 w-1 border-0 ${cornerClass}`} style="border-radius: 0;" aria-hidden="true"
+  ></span>
+  {label}
+</button>

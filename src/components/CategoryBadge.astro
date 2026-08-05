@@ -1,0 +1,35 @@
+---
+import Badge from './Badge.astro';
+import type { CategorySlug } from '../data/categories';
+import { categoryBySlug } from '../data/categories';
+
+interface Props {
+  /** Category slug from project schema: graphic-design | motion | engineering */
+  category: CategorySlug;
+  /** Override link (default: /projects?category=...) */
+  href?: string;
+  /** If true, render badge only with no link */
+  static?: boolean;
+  /** Badge variant (passed through to Badge) */
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline';
+}
+
+const { category, href, static: staticBadge = false, variant } = Astro.props;
+const config = categoryBySlug[category];
+if (!config) {
+  throw new Error(`Unknown category: ${category}. Expected one of: engineering, motion, graphic-design`);
+}
+const linkHref = href ?? `/projects?category=${category}`;
+---
+
+{
+  staticBadge ? (
+    <span class="inline-flex">
+      <Badge label={config.label} color={config.badgeColor} variant={variant} />
+    </span>
+  ) : (
+    <a href={linkHref} class="inline-flex no-underline transition-opacity duration-200 opacity-75 hover:opacity-100">
+      <Badge label={config.label} color={config.badgeColor} variant={variant} link />
+    </a>
+  )
+}

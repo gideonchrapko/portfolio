@@ -1,0 +1,365 @@
+---
+import { getCollection } from 'astro:content';
+import navConfig from '../data/nav-routes.json';
+import NavPill from './NavPill.astro';
+import NavPillDropdown from './NavPillDropdown.astro';
+
+type SimpleDropdownEntry = { label: string; href: string };
+type TreeDropdownEntry = {
+  prefix: string;
+  label?: string;
+  href?: string;
+  connector?: boolean;
+  suffix?: string;
+  level?: 'root' | 'category' | 'project';
+};
+type DropdownEntry = SimpleDropdownEntry | TreeDropdownEntry;
+
+type TreeNode = {
+  label: string;
+  href: string;
+  symbol?: string;
+  suffix?: string;
+  children?: TreeNode[];
+};
+
+type DropdownConfig = DropdownEntry[] | { tree: TreeNode[] };
+
+type NavItem = {
+  id: string;
+  pillLabel: string;
+  pillSlugLabel?: string;
+  pillHref: string;
+  pillOuterBg: string;
+  pillLabelBg: string;
+  dropdown?: DropdownConfig;
+};
+
+const rawItems = navConfig.items as NavItem[];
+
+// All non-draft projects, grouped by category → Projects pill dropdown (web development, motion, design, then api/projects)
+const allProjects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0),
+);
+
+const categoryOrder = ['engineering', 'motion', 'graphic-design'] as const;
+  const categoryLabels: Record<(typeof categoryOrder)[number], string> = {
+    engineering: 'engineering',
+    motion: 'motion',
+    'graphic-design': 'design',
+  };
+
+const projectsByCategory = categoryOrder.map((cat) => ({
+  label: categoryLabels[cat],
+  href: `/projects?category=${cat}`,
+  children: allProjects
+    .filter((p) => (p.data.category ?? 'graphic-design') === cat)
+    .map((p) => ({ label: p.data.title, href: `/projects/${p.id}` })),
+}));
+
+const items: NavItem[] = rawItems.map((item) => {
+  if (item.id !== 'projects' || !item.dropdown || !('tree' in item.dropdown) || !Array.isArray(item.dropdown.tree)) {
+    return item;
+  }
+  const tree = item.dropdown.tree as TreeNode[];
+  const projectsRoot = tree[0];
+  const otherRoots = tree.slice(1);
+  const newTree: TreeNode[] = [
+    {
+      ...projectsRoot,
+      label: projectsRoot.label,
+      href: projectsRoot.href,
+      symbol: projectsRoot.symbol,
+      children: projectsByCategory,
+    },
+    ...otherRoots,
+  ];
+  return { ...item, dropdown: { tree: newTree } };
+});
+
+function isTreeEntry(entry: DropdownEntry): entry is TreeDropdownEntry {
+  return typeof entry === 'object' && 'prefix' in entry;
+}
+
+function buildTreeLines(roots: TreeNode[]): TreeDropdownEntry[] {
+  const lines: TreeDropdownEntry[] = [];
+  const defaultSymbol = '○';
+
+  function addNode(node: TreeNode, indent: string, branch: string, sym: string, depth: number): void {
+    const level: TreeDropdownEntry['level'] = depth === 0 ? 'root' : depth === 1 ? 'category' : 'project';
+    lines.push({
+      prefix: `${indent}${branch} ${sym} `,
+      label: node.label,
+      href: node.href,
+      suffix: node.suffix,
+      level,
+    });
+    const children = node.children;
+    if (children?.length) {
+      const childIndent = indent + '│  ';
+      for (let j = 0; j < children.length; j++) {
+        const child = children[j];
+        const isLastChild = j === children.length - 1;
+        const childSym = child.symbol ?? defaultSymbol;
+        const childBranch = isLastChild ? '└' : '├';
+        addNode(child, childIndent, childBranch, childSym, depth + 1);
+      }
+    }
+  }
+
+  for (let i = 0; i < roots.length; i++) {
+    const root = roots[i];
+    const isFirstRoot = i === 0;
+    const isLastRoot = i === roots.length - 1;
+    const sym = root.symbol ?? defaultSymbol;
+    const rootBranch = isFirstRoot ? '┌' : isLastRoot ? '└' : '├';
+    addNode(root, '', rootBranch, sym, 0);
+    if (!isLastRoot) lines.push({ prefix: '│  ', connector: true });
+  }
+  return lines;
+}
+
+function getDropdownEntries(dropdown: DropdownConfig): DropdownEntry[] {
+  if (Array.isArray(dropdown)) return dropdown;
+  if (dropdown && 'tree' in dropdown && Array.isArray(dropdown.tree)) {
+    return buildTreeLines(dropdown.tree as TreeNode[]);
+  }
+  return [];
+}
+---
+
+<!-- Wrapper so dropdown is positioned relative to the nav (avoids fixed + transformed header issues) -->
+<div id="nav-pills-wrapper" class="relative">
+  <div
+    id="nav-pills-row"
+    class="flex flex-row flex-nowrap items-center justify-center"
+    role="navigation"
+    aria-label="Section"
+  >
+    {
+      items.map((item, i) => {
+        const entries = item.dropdown ? getDropdownEntries(item.dropdown) : [];
+        const isTree = entries.length > 0 && isTreeEntry(entries[0]);
+        return <NavPill item={item} entries={entries} isTree={isTree} index={i} />;
+      })
+    }
+  </div>
+
+  <!-- Single shared dropdown: X animates between pills; Y is instant. No transition until after first open. -->
+  <div
+    id="nav-shared-dropdown"
+    class="nav-shared-dropdown pointer-events-none absolute left-0 top-0 z-50 flex opacity-0 p-2"
+    style="transform: translateX(var(--nav-dropdown-left, 0px)) translateX(-50%); min-width: 22rem; max-width: min(22rem, calc(100vw - 2rem));"
+    role="dialog"
+    aria-hidden="true"
+    data-active-index="-1"
+  >
+    <div
+      id="nav-shared-dropdown-y"
+      class="nav-shared-dropdown-y w-full"
+      style="transform: translateY(var(--nav-dropdown-top, 0px));"
+    >
+      <div class="nav-shared-dropdown-content w-full rounded border border-gray-700 bg-[#0d0d0d] shadow-xl">
+        {
+          items.map((item, i) => {
+            const entries = item.dropdown ? getDropdownEntries(item.dropdown) : [];
+            const isTree = entries.length > 0 && isTreeEntry(entries[0]);
+            if (entries.length === 0) return null;
+            return (
+              <div data-nav-panel={i} class="nav-dropdown-panel hidden px-5 py-4">
+                <NavPillDropdown entries={entries} isTree={isTree} embed />
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const dropdown = document.getElementById('nav-shared-dropdown');
+    const dropdownY = document.getElementById('nav-shared-dropdown-y');
+    const wrapper = document.getElementById('nav-pills-wrapper');
+    const row = document.getElementById('nav-pills-row');
+    if (!dropdown || !dropdownY || !wrapper || !row) return;
+
+    const triggers = row!.querySelectorAll('[data-nav-trigger]');
+    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
+    let hasBeenVisible = false;
+
+    function show(index: number) {
+      const trigger = row!.querySelector(`[data-nav-index="${index}"]`);
+      if (!trigger) return;
+
+      const triggerRect = trigger.getBoundingClientRect();
+      const wrapperRect = wrapper!.getBoundingClientRect();
+
+      // Position relative to wrapper: dropdown center under pill, 6px gap
+      const left = triggerRect.left - wrapperRect.left + triggerRect.width / 2;
+      const top = triggerRect.bottom - wrapperRect.top + 6;
+
+      dropdown!.style.setProperty('--nav-dropdown-left', `${left}px`);
+      dropdownY!.style.setProperty('--nav-dropdown-top', `${top}px`);
+
+      dropdown!.removeEventListener('transitionend', onHideTransitionEnd);
+      dropdown!.setAttribute('data-active-index', String(index));
+      dropdown!.classList.add('nav-shared-dropdown-open');
+
+      // Add transition only after first paint so the first open doesn’t animate from (0,0)
+      if (!hasBeenVisible) {
+        hasBeenVisible = true;
+        requestAnimationFrame(() => {
+          dropdown!.classList.add('nav-shared-dropdown-visible');
+        });
+      }
+      dropdown!.setAttribute('aria-hidden', 'false');
+
+      triggers.forEach((t) =>
+        t.classList.toggle('nav-trigger-active', t.getAttribute('data-nav-index') === String(index)),
+      );
+
+      // Optional: flip above if not enough space below (still in wrapper coords)
+      requestAnimationFrame(() => {
+        const dr = dropdown!.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - (triggerRect.bottom + 6);
+        if (dr.height > spaceBelow && spaceBelow < triggerRect.top - 6) {
+          const topAbove = triggerRect.top - wrapperRect.top - 6;
+          dropdownY!.style.setProperty('--nav-dropdown-top', `${topAbove}px`);
+          dropdownY!.classList.add('nav-dropdown-above');
+        } else {
+          dropdownY!.classList.remove('nav-dropdown-above');
+        }
+      });
+    }
+
+    function getActiveSlugEl(): HTMLSpanElement | null {
+      const idx = dropdown!.getAttribute('data-active-index');
+      if (idx == null || idx === '-1') return null;
+      const trigger = row!.querySelector(`[data-nav-index="${idx}"]`);
+      return trigger?.querySelector<HTMLSpanElement>('.nav-slug-pill-text') ?? null;
+    }
+
+    function setSlugPillText(outer: HTMLElement, text: string) {
+      const inner = outer.querySelector<HTMLElement>('.nav-slug-pill-inner');
+      if (inner) inner.textContent = text;
+      outer.setAttribute('title', text);
+    }
+
+    function resetSlugPill() {
+      const el = getActiveSlugEl();
+      if (el) setSlugPillText(el, el.getAttribute('data-default-slug') ?? '[slug]');
+    }
+
+    function onHideTransitionEnd() {
+      dropdown!.removeEventListener('transitionend', onHideTransitionEnd);
+      dropdown!.setAttribute('data-active-index', '-1');
+      dropdown!.setAttribute('aria-hidden', 'true');
+      dropdownY!.classList.remove('nav-dropdown-above');
+      triggers.forEach((t) => t.classList.remove('nav-trigger-active'));
+      resetSlugPill();
+    }
+
+    function hide() {
+      dropdown!.classList.remove('nav-shared-dropdown-open');
+      dropdown!.addEventListener('transitionend', onHideTransitionEnd, { once: true });
+    }
+
+    function scheduleHide() {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(hide, 120);
+    }
+
+    function cancelHide() {
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+    }
+
+    triggers.forEach((trigger) => {
+      const index = trigger.getAttribute('data-nav-index');
+      if (index === null) return;
+
+      trigger.addEventListener('mouseenter', () => {
+        cancelHide();
+        show(Number(index));
+      });
+      trigger.addEventListener('mouseleave', () => scheduleHide());
+    });
+
+    dropdown.addEventListener('mouseenter', cancelHide);
+    dropdown.addEventListener('mouseleave', () => {
+      resetSlugPill();
+      scheduleHide();
+    });
+
+    function slugFromHref(href: string): string {
+      if (!href) return '[slug]';
+      try {
+        const url = new URL(href, window.location.origin);
+        if (url.hash) return url.hash;
+        const segments = url.pathname.split('/').filter(Boolean);
+        return segments.length ? segments[segments.length - 1] : url.pathname || '[slug]';
+      } catch {
+        return '[slug]';
+      }
+    }
+
+    dropdown.querySelectorAll('a[href]').forEach((link) => {
+      link.addEventListener('mouseenter', () => {
+        const href = (link as HTMLAnchorElement).getAttribute('href');
+        const slug = slugFromHref(href ?? '');
+        const el = getActiveSlugEl();
+        if (el) setSlugPillText(el, slug);
+      });
+    });
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('mouseenter', resetSlugPill);
+    });
+
+    // Prevent navigation when clicking the same pill (same path) so the nav doesn’t re-mount and re-animate
+    function normalizePath(path: string): string {
+      return path.replace(/\/$/, '') || '/';
+    }
+    row.querySelectorAll('a[href]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = (link as HTMLAnchorElement).getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        try {
+          const url = new URL(href, window.location.origin);
+          if (normalizePath(url.pathname) === normalizePath(window.location.pathname) && !url.hash) {
+            e.preventDefault();
+          }
+        } catch {}
+      });
+    });
+  })();
+</script>
+
+<style>
+  .nav-shared-dropdown-open {
+    opacity: 1 !important;
+  }
+  .nav-shared-dropdown-open .nav-shared-dropdown-content {
+    pointer-events: auto !important;
+  }
+  .nav-shared-dropdown-visible {
+    transition:
+      transform 0.35s ease-out,
+      opacity 0.3s ease-out !important;
+  }
+  .nav-shared-dropdown-y.nav-dropdown-above {
+    transform: translateY(var(--nav-dropdown-top, 0px)) translateY(-100%) !important;
+  }
+  .nav-shared-dropdown .nav-dropdown-panel {
+    display: none;
+  }
+  .nav-shared-dropdown[data-active-index='0'] .nav-dropdown-panel[data-nav-panel='0'],
+  .nav-shared-dropdown[data-active-index='1'] .nav-dropdown-panel[data-nav-panel='1'],
+  .nav-shared-dropdown[data-active-index='2'] .nav-dropdown-panel[data-nav-panel='2'] {
+    display: block;
+  }
+</style>

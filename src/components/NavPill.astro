@@ -1,0 +1,73 @@
+---
+interface Props {
+  item: {
+    pillLabel: string;
+    pillSlugLabel?: string;
+    pillHref: string;
+    pillOuterBg: string;
+    pillLabelBg: string;
+  };
+  entries: Array<
+    | { label: string; href: string }
+    | { prefix: string; label?: string; href?: string; connector?: boolean; suffix?: string }
+  >;
+  isTree: boolean;
+  /** Index of this pill (for shared dropdown targeting) */
+  index?: number;
+}
+
+const { item, entries, isTree, index } = Astro.props;
+const hasDropdown = entries.length > 0;
+
+/** Main pill background at 50% opacity for the slug pill */
+function slugPillBg(labelBg: string): string {
+  if (/^#[0-9A-Fa-f]{6}$/.test(labelBg)) return `${labelBg}80`;
+  if (labelBg === 'black' || labelBg === '#000' || labelBg === '#000000') return '#00000080';
+  return 'rgba(0,0,0,0.2)';
+}
+
+const slugLabel = hasDropdown ? (item.pillSlugLabel ?? '[slug]') : null;
+const slugBg = slugLabel ? slugPillBg(item.pillLabelBg || '#333') : null;
+---
+
+{
+  !hasDropdown ? (
+    <a
+      href={item.pillHref}
+      class="group flex cursor-pointer items-center rounded-lg p-0.5 transition-colors transition-opacity duration-200 hover:opacity-60 hover:underline"
+      style={`background-color: ${item.pillOuterBg}`}
+    >
+      <span
+        class="rounded-full px-2.5 py-1 text-base font-medium transition-colors"
+        style={`background-color: ${item.pillLabelBg}`}
+      >
+        {item.pillLabel}
+      </span>
+    </a>
+  ) : (
+    <div class="group relative" data-nav-index={index} data-nav-trigger>
+      <a
+        href={item.pillHref}
+        class="group/pill flex cursor-pointer items-center rounded-lg p-0.5 no-underline transition-colors transition-opacity duration-200 hover:opacity-60"
+        style={`background-color: ${item.pillOuterBg}`}
+      >
+        <span
+          class="rounded-full px-2.5 py-1 text-base font-medium text-white transition-colors"
+          style={`background-color: ${item.pillLabelBg}`}
+        >
+          {item.pillLabel}
+        </span>
+        {slugLabel && slugBg && (
+          <span
+            class="nav-slug-pill-text min-w-0 ml-0 max-w-0 overflow-hidden rounded-full px-0 py-0 text-[11px] text-white opacity-0 transition-[max-width,opacity,margin,padding] duration-300 ease-out group-hover:ml-0.5 group-hover:max-w-[5rem] group-hover:w-[5rem] group-hover:overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:opacity-100 group-hover:[&>.nav-slug-pill-inner]:min-w-0 group-[.nav-trigger-active]:ml-0.5 group-[.nav-trigger-active]:max-w-[5rem] group-[.nav-trigger-active]:w-[5rem] group-[.nav-trigger-active]:overflow-hidden group-[.nav-trigger-active]:px-2 group-[.nav-trigger-active]:py-1 group-[.nav-trigger-active]:opacity-100 group-[.nav-trigger-active]:[&>.nav-slug-pill-inner]:min-w-0"
+            style={`background-color: ${slugBg}`}
+            data-default-slug={slugLabel}
+            title={slugLabel}
+          >
+            <span class="nav-slug-pill-inner block min-w-0 truncate">{slugLabel}</span>
+          </span>
+        )}
+      </a>
+    </div>
+  )
+}

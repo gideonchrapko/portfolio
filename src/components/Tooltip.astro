@@ -1,0 +1,98 @@
+---
+interface Props {
+  /** Simple tooltip text (ignored when slot "content" is used) */
+  content?: string;
+  /** Position tooltip above, below, or to the left/right of the trigger */
+  side?: 'top' | 'bottom' | 'left' | 'right';
+  /** Optional extra class on the wrapper */
+  class?: string;
+}
+
+const { content = '', side = 'top', class: className = '' } = Astro.props;
+const hasRichContent = Astro.slots.has('content');
+const contentSlotHtml = hasRichContent ? await Astro.slots.render('content') : null;
+
+const sideClasses: Record<NonNullable<Props['side']>, { tooltip: string; arrow: string }> = {
+  top: {
+    tooltip: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
+    arrow: 'top-full left-1/2 -translate-x-1/2 h-0 w-0 border-4 border-transparent border-t-gray-900',
+  },
+  bottom: {
+    tooltip: 'top-full left-1/2 -translate-x-1/2 mt-2',
+    arrow: 'bottom-full left-1/2 -translate-x-1/2 h-0 w-0 border-4 border-transparent border-b-gray-900',
+  },
+  left: {
+    tooltip: 'right-full top-1/2 -translate-y-1/2 mr-2',
+    arrow: 'left-full top-1/2 -translate-y-1/2 h-0 w-0 border-4 border-transparent border-l-gray-900',
+  },
+  right: {
+    tooltip: 'left-full top-1/2 -translate-y-1/2 ml-2',
+    arrow: 'right-full top-1/2 -translate-y-1/2 h-0 w-0 border-4 border-transparent border-r-gray-900',
+  },
+};
+
+const s = sideClasses[side];
+---
+
+<div class={`tooltip-trigger group relative inline-flex ${className}`.trim()}>
+  <slot name="trigger" />
+  <slot />
+  <div
+    role="tooltip"
+    class={`tooltip-content pointer-events-none absolute z-50 opacity-0 transition-opacity duration-150 group-hover:opacity-100 ${s.tooltip}`}
+    aria-hidden="true"
+  >
+    <div
+      class={`tooltip-inner rounded-md border-0 bg-gray-900 text-sm text-white shadow-md ${hasRichContent ? 'tooltip-rich max-w-xs px-3 py-2.5' : 'px-3 py-1.5'}`}
+    >
+      {hasRichContent && contentSlotHtml != null ? <Fragment set:html={contentSlotHtml} /> : content}
+      <span class={`absolute ${s.arrow}`} aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const PADDING = 8;
+    document.querySelectorAll('.tooltip-trigger').forEach((trigger) => {
+      const tooltip = trigger.querySelector<HTMLElement>('.tooltip-content');
+      if (!tooltip) return;
+      trigger.addEventListener('mouseenter', () => {
+        requestAnimationFrame(() => {
+          const rect = tooltip.getBoundingClientRect();
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          let nudgeX = 0;
+          let nudgeY = 0;
+          if (rect.left < PADDING) nudgeX = PADDING - rect.left;
+          if (rect.right > vw - PADDING) nudgeX = vw - PADDING - rect.right;
+          if (rect.top < PADDING) nudgeY = PADDING - rect.top;
+          if (rect.bottom > vh - PADDING) nudgeY = vh - PADDING - rect.bottom;
+          tooltip.style.setProperty('--nudge-x', `${nudgeX}px`);
+          tooltip.style.setProperty('--nudge-y', `${nudgeY}px`);
+        });
+      });
+      trigger.addEventListener('mouseleave', () => {
+        tooltip.style.removeProperty('--nudge-x');
+        tooltip.style.removeProperty('--nudge-y');
+      });
+    });
+  })();
+</script>
+
+<style>
+  .tooltip-content {
+    transition: opacity 150ms ease-out;
+    transition-delay: 0ms;
+  }
+  .tooltip-trigger:hover .tooltip-content {
+    transition-delay: 200ms;
+  }
+  .tooltip-inner {
+    white-space: nowrap;
+    transform: translate(var(--nudge-x, 0), var(--nudge-y, 0));
+  }
+  .tooltip-inner.tooltip-rich {
+    white-space: normal;
+  }
+</style>

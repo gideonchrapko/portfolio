@@ -1,0 +1,75 @@
+---
+interface Props {
+  label: string;
+  /**
+   * Shadcn-style variant. When set, overrides color with semantic styles.
+   * - default: use color prop (filled)
+   * - secondary: muted gray
+   * - destructive: red/danger
+   * - outline: border, transparent bg
+   */
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline';
+  /** Bright badge color key (used when variant is "default" or omitted) */
+  color?:
+    'amber' | 'emerald' | 'rose' | 'sky' | 'violet' | 'orange' | 'lime' | 'cyan' | 'fuchsia' | 'teal' | 'lightGreen';
+  /** Show a green dot inside the badge (e.g. for "Current" badge) */
+  dot?: boolean;
+  /** When true, show a link arrow (↗) on the right; use when the badge is inside a link */
+  link?: boolean;
+}
+
+const colorMap: Record<NonNullable<Props['color']>, string> = {
+  amber: 'bg-amber-400',
+  emerald: 'bg-emerald-400',
+  rose: 'bg-rose-400',
+  sky: 'bg-sky-400',
+  violet: 'bg-violet-400',
+  orange: 'bg-orange-400',
+  lime: 'bg-lime-400',
+  cyan: 'bg-cyan-400',
+  fuchsia: 'bg-fuchsia-400',
+  teal: 'bg-teal-400',
+  lightGreen: 'bg-lime-200',
+};
+
+type Variant = NonNullable<Props['variant']>;
+const variantStyles: Record<Variant, { badge: string; corner: string }> = {
+  default: { badge: '', corner: '' },
+  secondary: {
+    badge: 'bg-gray-600 text-white',
+    corner: 'bg-gray-500',
+  },
+  destructive: {
+    badge: 'bg-red-500 text-white',
+    corner: 'bg-red-600',
+  },
+  outline: {
+    badge: 'border border-gray-300 bg-transparent text-gray-700',
+    corner: 'bg-gray-400',
+  },
+};
+
+const { label, variant = 'default', color = 'amber', dot = false, link = false } = Astro.props;
+const isDefault = variant === 'default';
+const v = variantStyles[variant];
+const bgClass = isDefault ? colorMap[color] : v.badge;
+const cornerClass = isDefault ? colorMap[color] : v.corner;
+---
+
+<span
+  class={`relative inline-flex items-center pl-2 pr-1 py-0.5 text-xs font-medium ${variant !== 'outline' ? 'border-0' : ''} ${isDefault ? 'text-gray-900' : ''} ${bgClass}`}
+  style="border-radius: 0;"
+>
+  {/* Small square juts out from top-left corner */}
+  <span class={`absolute -left-1 -top-1 h-1 w-1 border-0 ${cornerClass}`} style="border-radius: 0;" aria-hidden="true"
+  ></span>
+  {label}
+  {dot && <span class="ml-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />}
+  {
+    link && (
+      <span class="ml-1 shrink-0 text-[0.8em] opacity-80" aria-hidden="true">
+        ↗
+      </span>
+    )
+  }
+</span>

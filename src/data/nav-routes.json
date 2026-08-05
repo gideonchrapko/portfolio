@@ -1,0 +1,66 @@
+{
+  "items": [
+    {
+      "id": "about",
+      "pillLabel": "/about",
+      "pillHref": "/",
+      "pillOuterBg": "#A6DE00",
+      "pillLabelBg": "black",
+      "dropdown": {
+        "tree": [
+          {
+            "label": "/about",
+            "href": "/",
+            "symbol": "○",
+            "children": [
+              {
+                "label": "/about#intro",
+                "href": "/#intro"
+              },
+              {
+                "label": "/about#experience",
+                "href": "/#experience"
+              }
+            ]
+          },
+          {
+            "label": "/api/projects",
+            "href": "/api/projects",
+            "symbol": "λ"
+          }
+        ]
+      },
+      "pillSlugLabel": "[slug]"
+    },
+    {
+      "id": "projects",
+      "pillLabel": "/projects/",
+      "pillSlugLabel": "[slug]",
+      "pillHref": "/projects",
+      "pillOuterBg": "#EBB830",
+      "pillLabelBg": "#ff7200",
+      "dropdown": {
+        "tree": [
+          {
+            "label": "/projects",
+            "href": "/projects",
+            "symbol": "○",
+            "children": []
+          },
+          {
+            "label": "/api/projects",
+            "href": "/api/projects",
+            "symbol": "λ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "contact",
+      "pillLabel": "contact",
+      "pillHref": "mailto:gideonchrapko@gmail.com",
+      "pillOuterBg": "#A6DE00",
+      "pillLabelBg": ""
+    }
+  ]
+}

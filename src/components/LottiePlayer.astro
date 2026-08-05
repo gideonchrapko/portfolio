@@ -1,0 +1,150 @@
+---
+const { url } = Astro.props as { url: string };
+---
+
+<div
+  class="lottie-player w-full max-w-[360px] mx-auto rounded overflow-hidden border border-gray-200 bg-white"
+  data-lottie-url={url}
+>
+  <div class="lottie-container w-full bg-transparent"></div>
+  <div class="lottie-controls hidden flex-col gap-2 p-3 border-t border-gray-200">
+    <div class="flex items-center gap-3">
+      <button class="lottie-play-btn p-1.5 rounded-md hover:bg-gray-100 transition-colors" aria-label="Play / Pause">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <polygon class="lottie-play-icon" points="5,3 19,12 5,21" />
+          <rect class="lottie-pause-icon hidden" x="6" y="4" width="4" height="16" />
+          <rect class="lottie-pause-icon hidden" x="14" y="4" width="4" height="16" />
+        </svg>
+      </button>
+      <span class="lottie-frame-display w-fit min-w-[75px] gap-1 py-1 px-2 flex items-center text-[10px] h-5 text-gray-500 bg-gray-100 rounded-[5px] justify-between">
+        <span>#</span>
+        <span class="inline-block flex-1 text-right">
+          <span class="lottie-current-frame">0</span>
+          <span class="mx-0.5">/</span>
+          <span class="lottie-total-frames">0</span>
+        </span>
+      </span>
+      <button class="lottie-loop-btn ml-auto p-1.5 rounded-md hover:bg-gray-100 transition-colors" aria-label="Toggle loop">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10" />
+          <polyline points="23 20 23 14 17 14" />
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+        </svg>
+      </button>
+    </div>
+    <input
+      type="range"
+      class="lottie-scrubber w-full h-1.5 appearance-none bg-gray-200 rounded-full cursor-pointer accent-black [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:cursor-pointer"
+      min="0"
+      max="0"
+      step="1"
+      value="0"
+    />
+    <div class="flex items-center gap-2">
+      <button class="lottie-speed-btn text-xs px-3 py-1 rounded-md hover:bg-gray-100 transition-colors font-mono" aria-label="Cycle playback speed">1x</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import lottie from 'lottie-web';
+
+  const SPEEDS = [0.25, 0.5, 1, 2, 3];
+
+  document.querySelectorAll<HTMLElement>('.lottie-player').forEach((player) => {
+    const url = player.dataset.lottieUrl;
+    if (!url) return;
+
+    const container = player.querySelector<HTMLElement>('.lottie-container')!;
+    const controls = player.querySelector<HTMLElement>('.lottie-controls')!;
+    const playBtn = player.querySelector<HTMLButtonElement>('.lottie-play-btn')!;
+    const playIcon = player.querySelector<SVGPolygonElement>('.lottie-play-icon')!;
+    const pauseIcons = player.querySelectorAll<SVGRectElement>('.lottie-pause-icon');
+    const frameDisplay = player.querySelector<HTMLElement>('.lottie-current-frame')!;
+    const totalDisplay = player.querySelector<HTMLElement>('.lottie-total-frames')!;
+    const scrubber = player.querySelector<HTMLInputElement>('.lottie-scrubber')!;
+    const loopBtn = player.querySelector<HTMLButtonElement>('.lottie-loop-btn')!;
+    const speedBtn = player.querySelector<HTMLButtonElement>('.lottie-speed-btn')!;
+
+    let anim: any = null;
+    let isPlaying = true;
+    let isLooping = true;
+    let speed = 1;
+    let isScrubbing = false;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        const w = (data as any).w || 1;
+        const h = (data as any).h || 1;
+        container.style.aspectRatio = String(w / h);
+
+        anim = lottie.loadAnimation({
+          container,
+          animationData: data,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+        });
+
+        anim.addEventListener('DOMLoaded', () => {
+          controls.classList.remove('hidden');
+          totalDisplay.textContent = String(Math.round(anim.totalFrames));
+          scrubber.max = String(anim.totalFrames);
+        });
+
+        anim.addEventListener('enterFrame', () => {
+          if (!isScrubbing) {
+            frameDisplay.textContent = String(Math.round(anim.currentFrame));
+            scrubber.value = String(anim.currentFrame);
+          }
+        });
+      })
+      .catch(() => {});
+
+    function togglePlay() {
+      if (!anim) return;
+      if (isPlaying) {
+        anim.pause();
+      } else {
+        anim.play();
+      }
+      isPlaying = !isPlaying;
+      playIcon.classList.toggle('hidden');
+      pauseIcons.forEach((el) => el.classList.toggle('hidden'));
+    }
+
+    function toggleLoop() {
+      if (!anim) return;
+      isLooping = !isLooping;
+      anim.loop = isLooping;
+      if (isLooping && !anim.isPaused) anim.play();
+      loopBtn.classList.toggle('text-gray-400');
+      loopBtn.classList.toggle('text-gray-900');
+    }
+
+    function cycleSpeed() {
+      if (!anim) return;
+      const idx = SPEEDS.indexOf(speed);
+      const next = SPEEDS[(idx + 1) % SPEEDS.length];
+      anim.setSpeed(next);
+      speed = next;
+      speedBtn.textContent = `${speed}x`;
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+    loopBtn.addEventListener('click', toggleLoop);
+    speedBtn.addEventListener('click', cycleSpeed);
+
+    scrubber.addEventListener('mousedown', () => { isScrubbing = true; });
+    scrubber.addEventListener('touchstart', () => { isScrubbing = true; });
+    scrubber.addEventListener('mouseup', () => { isScrubbing = false; if (isPlaying && anim) anim.play(); });
+    scrubber.addEventListener('touchend', () => { isScrubbing = false; if (isPlaying && anim) anim.play(); });
+    scrubber.addEventListener('input', () => {
+      if (!anim) return;
+      const frame = parseFloat(scrubber.value);
+      anim.goToAndStop(frame, true);
+      frameDisplay.textContent = String(Math.round(frame));
+    });
+  });
+</script>
