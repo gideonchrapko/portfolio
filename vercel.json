@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/supabase",
+      "destination": "https://gideonchrapko.com/?utm_source=supabase-application&utm_medium=referral&utm_campaign=portfolio",
+      "permanent": false
+    }
+  ]
+}
