@@ -2,6 +2,4 @@
 title: Gideon Chrapko
 ---
 
-Designer and Engineer blending visual craft with full-stack development to build powerful brand experiences.
-
-I specialize in React, TypeScript, design systems, and headless web technologies.
+Designer with 7 years of experience shaping brand identity across marketing, web, and product. From a graphic design foundation to scalable creative systems and content workflows, I blend design and engineering to solve creative problems at scale.
