@@ -10,7 +10,9 @@ export default {
         footer: '#FAFAFA',
       },
       fontFamily: {
-        sans: ['ui-monospace', 'SFMono-Regular', '"SF Mono"', 'Menlo', 'Consolas', '"Liberation Mono"', 'monospace'],
+        sans: ['"PP Mori"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        display: ['"PP Mori"', '"Fraunces"', 'Georgia', '"Times New Roman"', 'serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', '"SF Mono"', 'Menlo', 'Consolas', '"Liberation Mono"', 'monospace'],
       },
     },
   },

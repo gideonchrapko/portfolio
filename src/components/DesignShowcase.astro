@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import { categoryBySlug, type CategorySlug } from '../data/categories';
+
+const allProjects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0),
+);
+
+const DESIGN_CATEGORIES: CategorySlug[] = ['graphic-design', 'motion'];
+const SHOWCASE_COUNT = 4;
+
+// Lead with design + motion work; top up with engineering if there aren't enough.
+const designFirst = allProjects.filter((p) =>
+  DESIGN_CATEGORIES.includes((p.data.category ?? 'graphic-design') as CategorySlug),
+);
+const rest = allProjects.filter(
+  (p) => !DESIGN_CATEGORIES.includes((p.data.category ?? 'graphic-design') as CategorySlug),
+);
+const showcase = [...designFirst, ...rest].slice(0, SHOWCASE_COUNT);
+
+function projectImage(project: (typeof allProjects)[number]): string | undefined {
+  return project.data.image ?? project.data.images?.[0];
+}
+function formatProjectDate(d: Date | undefined): string {
+  if (!d) return '';
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+}
+---
+
+<section id="work" class="mt-20 scroll-mt-24" aria-labelledby="work-heading">
+  <div class="mb-8 flex items-end justify-between gap-4">
+    <div>
+      <h2 id="work-heading" class="mt-2 font-display text-4xl font-semibold tracking-tight text-gray-900">
+        Recent projects
+      </h2>
+    </div>
+    <a
+      href="/projects"
+      class="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-gray-700 no-underline transition-colors hover:text-gray-900"
+    >
+      View all projects
+      <span class="inline-block transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true"
+        >→</span
+      >
+    </a>
+  </div>
+
+  <ul class="grid list-none grid-cols-1 gap-2 sm:grid-cols-2">
+    {
+      showcase.map((project) => {
+        const category = (project.data.category ?? 'graphic-design') as CategorySlug;
+        const config = categoryBySlug[category];
+        const image = projectImage(project);
+        return (
+          <li>
+            <a
+              href={`/projects/${project.id}`}
+              class="group block overflow-hidden rounded-2xl no-underline transition-all duration-300 hover:-translate-y-1"
+            >
+              <div class="aspect-[2/1] overflow-hidden bg-gray-100">
+                {image ? (
+                  <img
+                    src={image}
+                    alt=""
+                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="h-full w-full bg-gray-200" aria-hidden="true" />
+                )}
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

@@ -11,7 +11,7 @@ const allProjects = (await getCollection('projects', ({ data }) => !data.draft))
   (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0),
 );
 
-const categoryOrder = ['engineering', 'motion', 'graphic-design'] as const;
+const categoryOrder = ['graphic-design', 'motion', 'engineering'] as const;
 const categoryLabels: Record<(typeof categoryOrder)[number], string> = {
   engineering: 'engineering',
   motion: 'motion',
@@ -38,8 +38,8 @@ function formatProjectDate(d: Date | undefined): string {
 ---
 
 <Layout title="Projects" description="Selected projects — web development, motion, and design." image="/og.png">
-  <div class="px-4 py-8 font-mono">
-    <h1 class="text-2xl font-semibold text-gray-900">Projects</h1>
+  <div class="px-4 py-8 font-sans">
+    <h1 class="font-display text-4xl font-black tracking-tight text-gray-900">Projects</h1>
     <p id="projects-filter-summary" class="mt-1 text-gray-600">Things I've built.</p>
     <div class="mt-6 flex flex-wrap items-center gap-2">
       <span class="mr-2 text-sm font-medium text-gray-500">Categories</span>

@@ -22,11 +22,6 @@
                 "href": "/#experience"
               }
             ]
-          },
-          {
-            "label": "/api/projects",
-            "href": "/api/projects",
-            "symbol": "λ"
           }
         ]
       },
@@ -46,11 +41,6 @@
             "href": "/projects",
             "symbol": "○",
             "children": []
-          },
-          {
-            "label": "/api/projects",
-            "href": "/api/projects",
-            "symbol": "λ"
           }
         ]
       }

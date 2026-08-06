@@ -42,7 +42,7 @@ const allProjects = (await getCollection('projects', ({ data }) => !data.draft))
   (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0),
 );
 
-const categoryOrder = ['engineering', 'motion', 'graphic-design'] as const;
+const categoryOrder = ['graphic-design', 'motion', 'engineering'] as const;
   const categoryLabels: Record<(typeof categoryOrder)[number], string> = {
     engineering: 'engineering',
     motion: 'motion',
@@ -85,37 +85,33 @@ function buildTreeLines(roots: TreeNode[]): TreeDropdownEntry[] {
   const lines: TreeDropdownEntry[] = [];
   const defaultSymbol = '○';
 
-  function addNode(node: TreeNode, indent: string, branch: string, sym: string, depth: number): void {
-    const level: TreeDropdownEntry['level'] = depth === 0 ? 'root' : depth === 1 ? 'category' : 'project';
+  roots.forEach((root) => {
     lines.push({
-      prefix: `${indent}${branch} ${sym} `,
-      label: node.label,
-      href: node.href,
-      suffix: node.suffix,
-      level,
+      prefix: `${root.symbol ?? defaultSymbol} `,
+      label: root.label,
+      href: root.href,
+      suffix: root.suffix,
+      level: 'root',
     });
-    const children = node.children;
-    if (children?.length) {
-      const childIndent = indent + '│  ';
-      for (let j = 0; j < children.length; j++) {
-        const child = children[j];
-        const isLastChild = j === children.length - 1;
-        const childSym = child.symbol ?? defaultSymbol;
-        const childBranch = isLastChild ? '└' : '├';
-        addNode(child, childIndent, childBranch, childSym, depth + 1);
+    addChildren(root.children ?? [], '  ', 1);
+  });
+
+  function addChildren(children: TreeNode[], indent: string, depth: number): void {
+    children.forEach((child, j) => {
+      const isLast = j === children.length - 1;
+      lines.push({
+        prefix: `${indent}├ ${child.symbol ?? defaultSymbol} `,
+        label: child.label,
+        href: child.href,
+        suffix: child.suffix,
+        level: depth === 1 ? 'category' : 'project',
+      });
+      if (child.children?.length) {
+        addChildren(child.children, indent + '│  ', depth + 1);
       }
-    }
+    });
   }
 
-  for (let i = 0; i < roots.length; i++) {
-    const root = roots[i];
-    const isFirstRoot = i === 0;
-    const isLastRoot = i === roots.length - 1;
-    const sym = root.symbol ?? defaultSymbol;
-    const rootBranch = isFirstRoot ? '┌' : isLastRoot ? '└' : '├';
-    addNode(root, '', rootBranch, sym, 0);
-    if (!isLastRoot) lines.push({ prefix: '│  ', connector: true });
-  }
   return lines;
 }
 

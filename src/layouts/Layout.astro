@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import '../styles/global.css';
 
 interface Props {
   /** Page title (e.g. "About", "Projects"). Defaults to site name. */
@@ -11,10 +12,12 @@ interface Props {
   image?: string;
 }
 const { title, description, image } = Astro.props;
-const pageTitle = title ? `${title} | Gideon Chrapko` : 'Gideon Chrapko | Front End Developer';
+const isHome = Astro.url.pathname === '/';
+const pageTitle = title ? `${title} | Gideon Chrapko` : 'Gideon Chrapko | Designer & Engineer';
 const site = import.meta.env.SITE ?? 'https://gideonchrapko.com';
 const canonicalUrl = new URL(Astro.url.pathname, site).href;
-const ogDescription = description ?? 'Front end developer — design and code.';
+const ogDescription =
+  description ?? 'Designer with 7 years of experience shaping brand identity across marketing, web, and product.';
 const ogImage = image ? (image.startsWith('http') ? image : new URL(image, site).href) : new URL('/og.png', site).href;
 ---
 
@@ -25,6 +28,9 @@ const ogImage = image ? (image.startsWith('http') ? image : new URL(image, site)
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preload" href="/fonts/PPMori-Regular.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="/fonts/PPMori-Semibold.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="/fonts/PPMori-Black.otf" as="font" type="font/otf" crossorigin />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <!-- Google Analytics 4 -->
@@ -55,8 +61,8 @@ const ogImage = image ? (image.startsWith('http') ? image : new URL(image, site)
     <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImage} />
   </head>
-  <body class="m-0 flex min-h-screen w-full flex-col font-mono bg-[#FFFDF5]">
-    <Header />
+  <body class="m-0 flex min-h-screen w-full flex-col font-sans bg-[#FFFDF5]">
+    <Header animate={isHome} />
     <div class="min-h-0 flex-1 pt-16 pb-10">
       <div class="mx-auto max-w-7xl px-4">
         <main>

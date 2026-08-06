@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/fonts/PPMori-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/fonts/PPMori-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/fonts/PPMori-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/fonts/PPMori-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}

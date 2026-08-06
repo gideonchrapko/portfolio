@@ -12,13 +12,13 @@ const capabilities: { category: CategorySlug }[] = [
 ];
 ---
 
-<section id="experience" class="mt-16 scroll-mt-24 font-mono" aria-labelledby="experience-heading">
+<section id="experience" class="mt-20 scroll-mt-24 font-sans" aria-labelledby="experience-heading">
   <header class="mb-8">
-    <h2 id="experience-heading" class="text-2xl font-semibold text-gray-900">
-      <span class="text-gray-500">/</span>Experience
+    <h2 id="experience-heading" class="mt-2 font-display text-4xl font-semibold tracking-tight text-gray-900">
+      Where I've worked
     </h2>
 
-    <div class="flex flex-wrap items-center gap-x-0 gap-y-2">
+    <div class="mt-4 flex flex-wrap items-center gap-x-0 gap-y-2">
       {
         capabilities.map((cap, i) => (
           <>
@@ -37,70 +37,69 @@ const capabilities: { category: CategorySlug }[] = [
   <div class="space-y-10">
     {
       experience.map((job) => (
-        <article class="grid grid-cols-1 gap-4 py-4 sm:grid-cols-[minmax(0,13rem)_1fr] sm:items-start sm:gap-8">
+        <article class="grid grid-cols-1 gap-4 py-6 sm:grid-cols-[minmax(0,13rem)_1fr] sm:items-start sm:gap-8">
           <div
-            class={`border-l-[2px] pl-2 text-xs text-gray-500 sm:pt-0.5 ${
-              job.current ? 'border-l-emerald-500' : 'border-l-gray-300'
+            class={`border-l-2 pl-4 text-sm text-gray-500 sm:pt-0.5 ${
+              job.current ? 'border-emerald-500' : 'border-gray-200'
             }`}
           >
             <p class="whitespace-nowrap tabular-nums">
-              [ {job.start} – {job.end} ]
+              {job.start} – {job.end}
             </p>
-            <p class="mt-0.5 whitespace-nowrap font-medium text-gray-600">{job.duration}</p>
+            <p class="mt-0.5 whitespace-nowrap text-xs font-medium text-gray-400">{job.duration}</p>
           </div>
 
           <div>
-            <div class="text-sm">
+            <div class="text-base">
               <div class="flex flex-wrap items-center gap-2">
                 {job.url ? (
                   <a
                     href={job.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="group inline-flex items-center gap-1.5 rounded px-0.5 font-semibold text-gray-900 no-underline transition-colors hover:bg-gray-300/40"
+                    class="group inline-flex items-center gap-1.5 font-display text-xl font-semibold text-gray-900 no-underline transition-colors hover:text-gray-600"
                   >
-                    <span class="underline decoration-gray-400 hover:decoration-gray-600">{job.company}</span>
+                    <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-gray-900"
+                      >{job.company}</span
+                    >
                     <span
-                      class="inline-block text-base no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+                      class="inline-block text-base text-gray-400 no-underline transition-transform duration-200 group-hover:translate-x-0.5"
                       aria-hidden="true"
                     >
-                      →
+                      ↗
                     </span>
                   </a>
                 ) : (
-                  <span class="font-semibold text-gray-900">{job.company}</span>
+                  <span class="font-display text-xl font-semibold text-gray-900">{job.company}</span>
                 )}
                 {job.current && (
-                  <span class="inline-flex items-center gap-1.5 text-sm font-medium text-green-600">
-                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />
+                  <span class="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600">
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
                     Current
                   </span>
                 )}
               </div>
-              <p class="mt-0.5 text-gray-700">{job.role}</p>
+              <p class="mt-1 font-medium text-gray-700">{job.role}</p>
             </div>
-            <p class="mt-0.5 text-xs text-gray-500">
+            <p class="mt-1 text-sm text-gray-400">
               {job.type}
               {job.location ? ` · ${job.location}` : ''}
             </p>
 
             {job.scope.length > 0 && (
-              <div class="mt-4">
-                <p class="text-xs font-medium uppercase tracking-wider text-gray-500">— Scope</p>
-                <ul class="mt-1.5 list-none space-y-0.5 pl-0 text-sm text-gray-700">
-                  {job.scope.map((item) => (
-                    <li>
-                      <span class="text-gray-400">→</span>
-                      <span class="ml-2">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul class="mt-4 list-none space-y-2 pl-0 text-sm leading-relaxed text-gray-600">
+                {job.scope.map((item) => (
+                  <li class="flex gap-3">
+                    <span class="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-gray-300" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             )}
 
             {job.capabilities.length > 0 && (
-              <div class="mt-4">
-                <p class="text-xs font-medium uppercase tracking-wider text-gray-500">— Capabilities</p>
+              <div class="mt-5">
+                <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Capabilities</p>
                 <div class="mt-2 flex flex-wrap gap-2">
                   {job.capabilities.map((slug) => (
                     <a

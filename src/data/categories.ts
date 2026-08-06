@@ -3,7 +3,7 @@
  * Use with CategoryBadge and anywhere you need category order/labels (nav, projects index).
  */
 
-export const categorySlugs = ['engineering', 'motion', 'graphic-design'] as const;
+export const categorySlugs = ['graphic-design', 'motion', 'engineering'] as const;
 export type CategorySlug = (typeof categorySlugs)[number];
 
 export type CategoryBadgeColor =

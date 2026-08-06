@@ -4,6 +4,16 @@
       "source": "/supabase",
       "destination": "https://gideonchrapko.com/?utm_source=supabase-application&utm_medium=referral&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/critical-mass",
+      "destination": "https://gideonchrapko.com/?utm_source=critical-mass&utm_medium=referral&utm_campaign=portfolio",
+      "permanent": false
+    },
+    {
+      "source": "/city-of-calgary",
+      "destination": "https://gideonchrapko.com/?utm_source=city-of-calgary&utm_medium=referral&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }

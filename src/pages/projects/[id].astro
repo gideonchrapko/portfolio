@@ -50,9 +50,9 @@ function muxPlaybackId(idOrUrl: string): string {
 ---
 
 <Layout title={title} description={shareDescription} image={shareImage}>
-  <article class="px-4 py-8 font-mono">
+  <article class="px-4 py-8 font-sans">
     <header>
-      <h1 class="text-2xl font-semibold text-gray-900">{title}</h1>
+      <h1 class="font-display text-4xl font-black tracking-tight text-gray-900">{title}</h1>
       <div class="mt-1 flex flex-wrap items-center gap-2">
         {date && <span class="text-sm text-gray-500">{date.toLocaleDateString()}</span>}
         <CategoryBadge category={categorySlug} static />

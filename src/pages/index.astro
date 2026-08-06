@@ -1,49 +1,115 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Experience from '../components/Experience.astro';
-import CodeSidebar from '../components/CodeSidebar.astro';
+import DesignShowcase from '../components/DesignShowcase.astro';
 import { getEntry, render } from 'astro:content';
 
 const entry = await getEntry('pages', 'home');
 if (!entry) throw new Error('Missing content: pages/home.md');
 const { Content } = await render(entry);
-const description = entry.data.description ?? 'Front-end developer with a background in design.';
+const description =
+  entry.data.description ??
+  'Designer with 7 years of experience shaping brand identity across marketing, web, and product.';
 ---
 
 <Layout description={description} image="/og.png">
-  <div class="px-4 py-8 font-mono">
-    <div id="intro" class="scroll-mt-24">
-      <h1 class="text-7xl font-bold text-gray-900">/{entry.data.title}</h1>
-      <p class="mt-1 flex flex-wrap items-center gap-2 text-5xl font-bold">
-        <span
-          class="inline-flex flex-shrink-0 items-center justify-center rounded-3xl bg-black px-2 py-1 text-2xl text-white"
-          >✦</span
+  <div class="px-4 py-10 font-sans sm:px-6">
+    <div id="intro" class="max-w-3xl scroll-mt-24">
+      <h1
+        class="animate-rise mt-4 font-display text-8xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-7xl"
+      >
+        {entry.data.title}
+      </h1>
+      <p class="mt-2 flex flex-wrap items-center gap-3 text-3xl font-medium tracking-tight text-gray-700 sm:text-4xl">
+        <a
+          href="/projects"
+          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-amber-400"
+          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 120ms">
+            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-amber-400"
+              >Design</span
+            >
+            <span
+              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+              aria-hidden="true">→</span
+            >
+          </span></a
         >
-        <span>Design.</span>
-        <span
-          class="inline-flex flex-shrink-0 items-center justify-center rounded-3xl bg-black px-2 py-1 text-xl text-white"
-          >{'</>'}</span
+        <a
+          href="/projects"
+          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-sky-400"
+          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 280ms">
+            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-sky-400">Code</span>
+            <span
+              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+              aria-hidden="true">→</span
+            >
+          </span></a
         >
-        <span>Code.</span>
+        <a
+          href="/projects"
+          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-violet-400"
+          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 440ms">
+            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-violet-400"
+              >Motion</span
+            >
+            <span
+              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
+              aria-hidden="true">→</span
+            >
+          </span></a
+        >
       </p>
       <div
-        class="mt-6 space-y-4 text-xl [&_a]:text-blue-600 [&_a]:underline [&_h2]:mt-6 [&_h2]:text-xl [&_ul]:list-disc [&_ul]:pl-6"
+        class="animate-rise mt-3 space-y-4 text-lg leading-relaxed text-gray-600 [&_a]:text-gray-900 [&_a]:underline [&_a]:underline-offset-4 [&_a]:decoration-gray-400 [&_a]:hover:decoration-gray-700 [&_p]:mt-4 [&_p:first-child]:mt-0"
+        style="animation-delay: 600ms"
       >
         <Content />
       </div>
-    </div>
-    <p class="mt-6">
-      <a
-        href="/projects"
-        class="font-bold text-gray-600 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600"
-        >[View work]</a
-      >
-    </p>
-    <div class="experience-wrapper mt-10 flex flex-col lg:flex-row lg:items-start lg:gap-10">
-      <div class="min-w-0 flex-1">
-        <Experience />
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <a
+          href="/projects"
+          class="inline-flex items-center gap-2 rounded-full bg-orange-400 px-6 py-3 text-sm font-semibold text-white no-underline transition-colors hover:bg-orange-300"
+        >
+          View selected work
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="/#experience"
+          class="inline-flex items-center gap-2 rounded-full border border-gray-900/20 px-6 py-3 text-sm font-semibold text-gray-700 no-underline transition-colors hover:border-gray-900/50 hover:text-gray-900"
+        >
+          Experience
+        </a>
       </div>
-      <CodeSidebar />
+    </div>
+
+    <DesignShowcase />
+
+    <div class="mt-20">
+      <Experience />
     </div>
   </div>
 </Layout>
+
+<style>
+  .animate-rise {
+    animation: rise-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-rise {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
