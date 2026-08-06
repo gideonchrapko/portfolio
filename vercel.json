@@ -14,6 +14,11 @@
       "source": "/city-of-calgary",
       "destination": "https://gideonchrapko.com/?utm_source=city-of-calgary&utm_medium=referral&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/autodesk",
+      "destination": "https://gideonchrapko.com/?utm_source=autodesk&utm_medium=referral&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
