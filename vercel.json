@@ -19,6 +19,11 @@
       "source": "/autodesk",
       "destination": "https://gideonchrapko.com/?utm_source=autodesk&utm_medium=referral&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/canadian-red-cross",
+      "destination": "https://gideonchrapko.com/?utm_source=canadian-red-cross&utm_medium=linkedin&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
