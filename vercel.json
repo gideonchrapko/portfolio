@@ -24,6 +24,11 @@
       "source": "/canadian-red-cross",
       "destination": "https://gideonchrapko.com/?utm_source=canadian-red-cross&utm_medium=linkedin&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/exacare",
+      "destination": "https://gideonchrapko.com/?utm_source=exacare&utm_medium=linkedin&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
