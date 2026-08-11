@@ -34,6 +34,11 @@
       "source": "/icuc",
       "destination": "https://gideonchrapko.com/?utm_source=icuc&utm_medium=dentsu&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/pixel1",
+      "destination": "https://gideonchrapko.com/?utm_source=pixel1&utm_medium=notion_form&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
