@@ -29,6 +29,11 @@
       "source": "/exacare",
       "destination": "https://gideonchrapko.com/?utm_source=exacare&utm_medium=linkedin&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/icuc",
+      "destination": "https://gideonchrapko.com/?utm_source=icuc&utm_medium=dentsu&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
