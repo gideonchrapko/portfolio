@@ -44,6 +44,11 @@
       "source": "/0g",
       "destination": "https://gideonchrapko.com/?utm_source=0g&utm_medium=ashby&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/devoted-games",
+      "destination": "https://gideonchrapko.com/?utm_source=devoted-games&utm_medium=ashby&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
