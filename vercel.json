@@ -39,6 +39,11 @@
       "source": "/pixel1",
       "destination": "https://gideonchrapko.com/?utm_source=pixel1&utm_medium=notion_form&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/0g",
+      "destination": "https://gideonchrapko.com/?utm_source=0g&utm_medium=ashby&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
