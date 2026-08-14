@@ -31,6 +31,7 @@ const projectSection = z.object({
   description: z.string().optional(), // text content rendered below the title
   images: z.array(z.string()).optional().default([]), // paths in /public, e.g. /projects/stand-with-crypto/01.jpg
   videos: z.array(videoSource).optional().default([]), // URL string or { webm?, mp4? } for smaller size
+  pdf: z.string().optional(), // path to a PDF in /public, e.g. /projects/stand-with-crypto/deck.pdf (embedded inline)
   embed: z.string().optional(), // URL to embed in an iframe (full-width)
   lottie: z.string().optional(), // path to Lottie JSON file in /public, e.g. /assets/animation.json
   link: z.string().optional(), // e.g. Lottie share URL
@@ -64,6 +65,8 @@ const projects = defineCollection({
     // Simple projects: one set of media (no numbered sections)
     images: z.array(z.string()).optional(),
     videos: z.array(videoSource).optional(),
+    /** PDF(s) to embed inline via iframe, paths in /public (e.g. /projects/slug/file.pdf) */
+    pdfs: z.array(z.string()).optional(),
     /** When true, show the browser’s native video controls (play, pause, progress, volume). Default false. */
     showVideoControls: z.boolean().optional().default(false),
   }),
