@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "redirect": "node scripts/add-redirect.mjs"
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.2",

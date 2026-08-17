@@ -28,7 +28,9 @@ sections:
     videos:
       - mux: m501Qp67BOc84HtuTTF8ou69JzSc1W0200sE7jY02tLPc2w
   - title: Lottie Animation
-    lottie: /projects/coinbase-one/coinbase-one-animation.json
+    lottie:
+      - /projects/coinbase-one/coinbase-one-animation.json
+      - /projects/coinbase-one/coinbase-one-premium-animation.json
 ---
 
 <!-- Add more body content if needed -->

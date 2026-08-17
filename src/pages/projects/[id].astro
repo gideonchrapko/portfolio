@@ -281,8 +281,10 @@ function muxPlaybackId(idOrUrl: string): string {
                     </div>
                   )}
                   {section.lottie && (
-                    <div class="mt-8">
-                      <LottiePlayer url={section.lottie} />
+                    <div class="mt-8 flex flex-wrap justify-center gap-6">
+                      {(Array.isArray(section.lottie) ? section.lottie : [section.lottie]).map((url) => (
+                        <LottiePlayer url={url} />
+                      ))}
                     </div>
                   )}
                 </section>

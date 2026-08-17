@@ -33,7 +33,7 @@ const projectSection = z.object({
   videos: z.array(videoSource).optional().default([]), // URL string or { webm?, mp4? } for smaller size
   pdf: z.string().optional(), // path to a PDF in /public, e.g. /projects/stand-with-crypto/deck.pdf (embedded inline)
   embed: z.string().optional(), // URL to embed in an iframe (full-width)
-  lottie: z.string().optional(), // path to Lottie JSON file in /public, e.g. /assets/animation.json
+  lottie: z.union([z.string(), z.array(z.string())]).optional(), // path(s) to Lottie JSON file in /public, e.g. /assets/animation.json
   link: z.string().optional(), // e.g. Lottie share URL
 });
 
