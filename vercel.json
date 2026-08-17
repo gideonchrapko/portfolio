@@ -54,6 +54,11 @@
       "source": "/cossette",
       "destination": "https://gideonchrapko.com/?utm_source=cossette&utm_medium=website&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/liftoff",
+      "destination": "https://gideonchrapko.com/?utm_source=liftoff&utm_medium=website&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
