@@ -64,6 +64,11 @@
       "source": "/thinking-box",
       "destination": "https://gideonchrapko.com/?utm_source=thinking-box&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/lg2",
+      "destination": "https://gideonchrapko.com/?utm_source=lg2&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
