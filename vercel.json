@@ -59,6 +59,11 @@
       "source": "/liftoff",
       "destination": "https://gideonchrapko.com/?utm_source=liftoff&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/thinking-box",
+      "destination": "https://gideonchrapko.com/?utm_source=thinking-box&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
