@@ -69,6 +69,11 @@
       "source": "/lg2",
       "destination": "https://gideonchrapko.com/?utm_source=lg2&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/orion-digital",
+      "destination": "https://gideonchrapko.com/?utm_source=orion-digital&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
