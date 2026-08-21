@@ -79,6 +79,11 @@
       "source": "/cli0",
       "destination": "https://gideonchrapko.com/?utm_source=clio&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/maax",
+      "destination": "https://gideonchrapko.com/?utm_source=maax-bath&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
