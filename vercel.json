@@ -84,6 +84,11 @@
       "source": "/maax",
       "destination": "https://gideonchrapko.com/?utm_source=maax-bath&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/intelligent-investing",
+      "destination": "https://gideonchrapko.com/?utm_source=intelligent-investing&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
