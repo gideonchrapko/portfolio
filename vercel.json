@@ -89,6 +89,11 @@
       "source": "/intelligent-investing",
       "destination": "https://gideonchrapko.com/?utm_source=intelligent-investing&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/spare",
+      "destination": "https://gideonchrapko.com/?utm_source=spare&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
