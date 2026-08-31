@@ -99,6 +99,11 @@
       "source": "/wealthsimple",
       "destination": "https://gideonchrapko.com/?utm_source=wealthsimple&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/unity",
+      "destination": "https://gideonchrapko.com/?utm_source=unity&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
