@@ -94,6 +94,11 @@
       "source": "/spare",
       "destination": "https://gideonchrapko.com/?utm_source=spare&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/wealthsimple",
+      "destination": "https://gideonchrapko.com/?utm_source=wealthsimple&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
