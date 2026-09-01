@@ -104,6 +104,11 @@
       "source": "/unity",
       "destination": "https://gideonchrapko.com/?utm_source=unity&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/tiny-health",
+      "destination": "https://gideonchrapko.com/?utm_source=tiny-health&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
