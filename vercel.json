@@ -109,6 +109,11 @@
       "source": "/tiny-health",
       "destination": "https://gideonchrapko.com/?utm_source=tiny-health&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/algaecall",
+      "destination": "https://gideonchrapko.com/?utm_source=algaecal&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
