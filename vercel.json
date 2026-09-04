@@ -129,6 +129,11 @@
       "source": "/dept",
       "destination": "https://gideonchrapko.com/?utm_source=dept&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/whc",
+      "destination": "https://gideonchrapko.com/?utm_source=web-hosting-canada&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
