@@ -134,6 +134,11 @@
       "source": "/whc",
       "destination": "https://gideonchrapko.com/?utm_source=web-hosting-canada&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/stack-adapt",
+      "destination": "https://gideonchrapko.com/?utm_source=stackadapt&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
