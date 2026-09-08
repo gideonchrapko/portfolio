@@ -2,7 +2,7 @@
 title: Stand With Crypto Marketing
 description: Social, motion, and print collateral for the Stand With Crypto advocacy brand
 date: 2024-11-15
-category: graphic-design
+categories: [visual-communications]
 draft: false
 tags: [graphic-design, editorial, animation, lottie, typography, illustration]
 roles:

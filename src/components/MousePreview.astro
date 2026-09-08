@@ -1,0 +1,124 @@
+---
+---
+
+<div
+	id="cursor-preview"
+	class="pointer-events-none fixed top-0 left-0 z-50 will-change-transform"
+	aria-hidden="true"
+>
+	<div id="cursor-preview-inner" class="transition-all duration-200 ease-out opacity-0 scale-90">
+		<img
+			id="cursor-preview-img"
+			alt=""
+			class="h-56 w-auto rounded-lg border border-black/10 object-cover shadow-2xl"
+		/>
+		<span
+			id="cursor-preview-label"
+			class="mt-1.5 block w-max font-dmmono text-[11px] tracking-widest text-zinc-600 uppercase"
+		></span>
+	</div>
+</div>
+
+<script>
+	const root = document.getElementById('cursor-preview');
+	const inner = document.getElementById('cursor-preview-inner');
+	const img = document.getElementById('cursor-preview-img') as HTMLImageElement | null;
+	const label = document.getElementById('cursor-preview-label');
+
+	if (root && inner && img) {
+		const TRIGGER = '[data-preview-src]';
+		const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+		let current: HTMLElement | null = null;
+		let targetX = 0;
+		let targetY = 0;
+		let cursorX = 0;
+		let cursorY = 0;
+		let raf = 0;
+		let imageW = 240;
+		let imageH = 224;
+
+		function settleTransform() {
+			cursorX = targetX;
+			cursorY = targetY;
+			root.style.transform = `translate3d(${Math.round(cursorX)}px, ${Math.round(cursorY)}px, 0)`;
+		}
+
+		function loop() {
+			raf = 0;
+			if (!current) return;
+			const k = reduced ? 1 : 0.16;
+			cursorX += (targetX - cursorX) * k;
+			cursorY += (targetY - cursorY) * k;
+			if (!reduced && (Math.abs(targetX - cursorX) > 0.5 || Math.abs(targetY - cursorY) > 0.5)) {
+				raf = requestAnimationFrame(loop);
+			}
+			root.style.transform = `translate3d(${Math.round(cursorX)}px, ${Math.round(cursorY)}px, 0)`;
+		}
+
+		function show() {
+			inner.classList.remove('opacity-0', 'scale-90');
+			inner.classList.add('opacity-100', 'scale-100');
+			if (!raf) raf = requestAnimationFrame(loop);
+		}
+
+		function hide() {
+			current = null;
+			if (raf) {
+				cancelAnimationFrame(raf);
+				raf = 0;
+			}
+			inner.classList.remove('opacity-100', 'scale-100');
+			inner.classList.add('opacity-0', 'scale-90');
+		}
+
+		function updateTarget(e: MouseEvent) {
+			if (!current) return;
+			const overflowRight = e.clientX + imageW + 24 > window.innerWidth;
+			const overflowBottom = e.clientY + imageH + 24 > window.innerHeight;
+			const offsetX = overflowRight ? -imageW - 18 : 18;
+			const offsetY = overflowBottom ? -imageH - 18 : 18;
+			targetX = e.clientX + offsetX;
+			targetY = e.clientY + offsetY;
+		}
+
+		function activate(el: HTMLElement, e: MouseEvent) {
+			current = el;
+			const src = el.dataset.previewSrc;
+			img.src = src || '';
+			if (label) label.textContent = el.dataset.previewLabel || '';
+			imageW = 240;
+			imageH = 224;
+			updateTarget(e);
+			settleTransform();
+			show();
+		}
+
+		img.addEventListener('load', () => {
+			if (img.naturalWidth && img.clientWidth) {
+				imageW = img.clientWidth;
+				imageH = img.clientHeight;
+			}
+		});
+
+		document.addEventListener('mouseover', (e) => {
+			const target = e.target instanceof Element ? e.target.closest<HTMLElement>(TRIGGER) : null;
+			if (target) {
+				if (target !== current) activate(target, e);
+				else updateTarget(e);
+				if (!raf) raf = requestAnimationFrame(loop);
+			} else if (current) {
+				hide();
+			}
+		});
+
+		document.addEventListener('mousemove', (e) => {
+			if (!current) return;
+			updateTarget(e);
+			if (!raf) raf = requestAnimationFrame(loop);
+		});
+
+		document.addEventListener('mouseleave', hide);
+		window.addEventListener('blur', hide);
+	}
+</script>

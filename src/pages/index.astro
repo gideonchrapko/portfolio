@@ -1,115 +1,228 @@
 ---
+import Badge from '../components/Badge.astro';
 import Layout from '../layouts/Layout.astro';
-import Experience from '../components/Experience.astro';
-import DesignShowcase from '../components/DesignShowcase.astro';
-import { getEntry, render } from 'astro:content';
+import ProjectsShowcase from '../components/ProjectsShowcase.astro';
+import profile from '../assets/images/profile.webp';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const entry = await getEntry('pages', 'home');
-if (!entry) throw new Error('Missing content: pages/home.md');
-const { Content } = await render(entry);
-const description =
-  entry.data.description ??
-  'Designer with 7 years of experience shaping brand identity across marketing, web, and product.';
+const services = [
+	{ text: 'Brand Design', slug: 'brand-design', color: 'acid' },
+	{ text: 'Design Systems', slug: 'design-systems', color: 'azure' },
+	{ text: 'Web Development', slug: 'web-development', color: 'gold' },
+	{ text: 'Creative Engineering', slug: 'creative-engineering', color: 'mint' },
+	{ text: 'Visual Communications', slug: 'visual-communications', color: 'hot-pink' },
+];
 ---
 
-<Layout description={description} image="/og.png">
-  <div class="px-4 py-10 font-sans sm:px-6">
-    <div id="intro" class="max-w-3xl scroll-mt-24">
-      <h1
-        class="animate-rise mt-4 font-display text-8xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-7xl"
-      >
-        {entry.data.title}
-      </h1>
-      <p class="mt-2 flex flex-wrap items-center gap-3 text-3xl font-medium tracking-tight text-gray-700 sm:text-4xl">
-        <a
-          href="/projects?category=graphic-design"
-          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-amber-400"
-          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 120ms">
-            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-amber-400"
-              >Design</span
-            >
-            <span
-              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
-              aria-hidden="true">→</span
-            >
-          </span></a
-        >
-        <a
-          href="/projects?category=engineering"
-          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-sky-400"
-          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 280ms">
-            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-sky-400">Code</span>
-            <span
-              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
-              aria-hidden="true">→</span
-            >
-          </span></a
-        >
-        <a
-          href="/projects?category=motion"
-          class="group inline-flex items-center gap-2 font-normal text-gray-800 no-underline transition-colors hover:text-violet-400"
-          ><span class="animate-rise inline-flex items-center gap-2" style="animation-delay: 440ms">
-            <span class="underline decoration-gray-400 underline-offset-4 group-hover:decoration-violet-400"
-              >Motion</span
-            >
-            <span
-              class="inline-block text-2xl no-underline transition-transform duration-200 -rotate-45 group-hover:rotate-0"
-              aria-hidden="true">→</span
-            >
-          </span></a
-        >
-      </p>
-      <div
-        class="animate-rise mt-3 space-y-4 text-lg leading-relaxed text-gray-600 [&_a]:text-gray-900 [&_a]:underline [&_a]:underline-offset-4 [&_a]:decoration-gray-400 [&_a]:hover:decoration-gray-700 [&_p]:mt-4 [&_p:first-child]:mt-0"
-        style="animation-delay: 600ms"
-      >
-        <Content />
-      </div>
-      <div class="mt-9 flex flex-wrap items-center gap-4">
-        <a
-          href="/projects"
-          class="inline-flex items-center gap-2 rounded-full bg-orange-400 px-6 py-3 text-sm font-semibold text-white no-underline transition-colors hover:bg-orange-300"
-        >
-          View selected work
-          <span aria-hidden="true">→</span>
-        </a>
-        <a
-          href="/#experience"
-          class="inline-flex items-center gap-2 rounded-full border border-gray-900/20 px-6 py-3 text-sm font-semibold text-gray-700 no-underline transition-colors hover:border-gray-900/50 hover:text-gray-900"
-        >
-          Experience
-        </a>
-      </div>
-    </div>
-
-    <DesignShowcase />
-
-    <div class="mt-20">
-      <Experience />
-    </div>
-  </div>
+<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<section class="px-6 pt-8 sm:pt-16">
+		<div class="max-w-3xl">
+			<h1 class="rise font-display text-3xl font-medium leading-[0.95] tracking-tight sm:text-5xl">
+				<span
+					data-preview-src={profile.src}
+					data-cursor="name"
+					class="inline-block cursor-pointer"
+				>
+					Gideon Chrapko
+				</span>
+			</h1>
+			<div
+				class="rise mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 max-w-162"
+				data-service-badges
+				style="animation-delay: 120ms"
+			>
+				<span class="font-dmmono text-sm font-medium">Creative</span>
+				{services.map((service) => (
+					<button
+						type="button"
+						class="service-toggle"
+						data-service={service.slug}
+						aria-pressed="false"
+					>
+						<Badge text={service.text} color={service.color} />
+					</button>
+				))}
+			</div>
+			<div
+				class="rise mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 font-dmmono text-[12px] leading-normal tracking-[-0.24px] text-black"
+				style="animation-delay: 240ms"
+			>
+				<span class="flex items-center gap-[3px]">
+					<span class="whitespace-nowrap">Prev. Design @ </span>{''}
+					<span
+						class="relative mx-1 flex h-3.5 w-3.5 shrink-0 items-center justify-center -top-px"
+					>
+						<img src="/logos/botpress.svg" alt="" class="h-3.5 w-auto" />
+					</span>
+					<a
+						href="https://botpress.com"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="whitespace-nowrap text-black no-underline hover:underline underline-offset-2"
+					>
+						Botpress
+					</a>
+				</span>
+				<span class="flex items-center gap-[3px]">
+					<span class="whitespace-nowrap">UX Motion @</span>
+					<span
+						class="relative mx-1 flex h-3.5 w-3.5 shrink-0 items-center justify-center -top-px"
+					>
+						<img src="/logos/coinbase.svg" alt="" class="h-3.5 w-auto" />
+					</span>
+					<a
+						href="https://coinbase.com"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="whitespace-nowrap text-black no-underline hover:underline underline-offset-2"
+					>
+						Coinbase
+					</a>
+				</span>
+			</div>
+		</div>
+	</section>
+	<ProjectsShowcase />
 </Layout>
 
 <style>
-  .animate-rise {
-    animation: rise-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
+	.rise {
+		animation: rise-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	}
 
-  @keyframes rise-in {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+	@keyframes rise-in {
+		from {
+			opacity: 0;
+			transform: translateY(14px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 
-  @media (prefers-reduced-motion: reduce) {
-    .animate-rise {
-      animation: none;
-      opacity: 1;
-    }
-  }
+	@media (prefers-reduced-motion: reduce) {
+		.rise {
+			animation: none;
+		}
+	}
+
+	.service-toggle {
+		background: none;
+		border: 0;
+		padding: 0;
+		line-height: 1;
+	}
+	.service-toggle :global([data-badge]) {
+		transition:
+			background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
+			filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	.service-toggle.is-dim :global([data-badge]) {
+		background-color: #e4e4e7;
+	}
+	.service-toggle:focus-visible {
+		outline: 2px solid #18181b;
+		outline-offset: 3px;
+	}
 </style>
+
+<script>
+	const group = document.querySelector<HTMLElement>('[data-service-badges]');
+	if (group) {
+		const buttons = Array.from(
+			group.querySelectorAll<HTMLButtonElement>('[data-service]')
+		);
+		let selected = new Set<string>();
+		let hovered: string | null = null;
+		let justToggled: string | null = null;
+
+		function readCategoryParam(): Set<string> {
+			const value = new URLSearchParams(location.search).get('category');
+			return new Set(value ? value.split(',') : []);
+		}
+
+		function writeCategoryParam() {
+			const url = new URL(location.href);
+			if (selected.size === 0) {
+				url.searchParams.delete('category');
+			} else {
+				url.searchParams.set('category', [...selected].join(','));
+			}
+			const search = url.search.replace(/%2C/g, ',');
+			history.replaceState(null, '', `${url.pathname}${search}`);
+		}
+
+		function announce() {
+			window.dispatchEvent(
+				new CustomEvent<string[]>('gideon:category-change', {
+					detail: [...selected],
+				})
+			);
+		}
+
+		selected = readCategoryParam();
+
+		function render() {
+			const nothingActive = hovered === null && selected.size === 0;
+			buttons.forEach((button) => {
+				const name = button.dataset.service ?? null;
+				const lit =
+					nothingActive ||
+					(name !== null &&
+						(selected.has(name) ||
+							(justToggled !== name &&
+								(hovered === name || button.matches(':focus-visible')))));
+				button.classList.toggle('is-dim', !lit);
+				button.setAttribute(
+					'aria-pressed',
+					String(name !== null && selected.has(name))
+				);
+			});
+		}
+
+		function nameAt(x: number, y: number): string | null {
+			const el = document.elementFromPoint(x, y);
+			return el?.closest('[data-service]')?.dataset.service ?? null;
+		}
+
+		window.addEventListener(
+			'pointermove',
+			(event) => {
+				const name = nameAt(event.clientX, event.clientY);
+				if (name === hovered) return;
+				if (name === null || name !== justToggled) justToggled = null;
+				hovered = name !== null && name === justToggled ? null : name;
+				render();
+			},
+			{ passive: true }
+		);
+
+		document.addEventListener('pointerleave', () => {
+			if (hovered !== null) {
+				hovered = null;
+				render();
+			}
+		});
+
+		buttons.forEach((button) => {
+			const name = button.dataset.service ?? null;
+			button.addEventListener('click', () => {
+				if (name === null) return;
+				justToggled = name;
+				hovered = null;
+				if (selected.has(name)) {
+					selected.delete(name);
+				} else {
+					selected.add(name);
+				}
+				render();
+				writeCategoryParam();
+				announce();
+			});
+		});
+
+		render();
+		announce();
+	}
+</script>

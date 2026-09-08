@@ -1,75 +1,74 @@
 ---
 interface Props {
-  label: string;
-  /**
-   * Shadcn-style variant. When set, overrides color with semantic styles.
-   * - default: use color prop (filled)
-   * - secondary: muted gray
-   * - destructive: red/danger
-   * - outline: border, transparent bg
-   */
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline';
-  /** Bright badge color key (used when variant is "default" or omitted) */
-  color?:
-    'amber' | 'emerald' | 'rose' | 'sky' | 'violet' | 'orange' | 'lime' | 'cyan' | 'fuchsia' | 'teal' | 'lightGreen';
-  /** Show a green dot inside the badge (e.g. for "Current" badge) */
-  dot?: boolean;
-  /** When true, show a link arrow (↗) on the right; use when the badge is inside a link */
-  link?: boolean;
+	/** Label shown inside the badge. */
+	text: string;
+	/** Optional URL. When set the badge renders as a link. */
+	href?: string;
+	/** Light grey background with white text. Overrides `color`. */
+	ghost?: boolean;
+	/** Tailwind colour to use for the badge background. */
+	color?: ColorName;
 }
 
-const colorMap: Record<NonNullable<Props['color']>, string> = {
-  amber: 'bg-amber-400',
-  emerald: 'bg-emerald-400',
-  rose: 'bg-rose-400',
-  sky: 'bg-sky-400',
-  violet: 'bg-violet-400',
-  orange: 'bg-orange-400',
-  lime: 'bg-lime-400',
-  cyan: 'bg-cyan-400',
-  fuchsia: 'bg-fuchsia-400',
-  teal: 'bg-teal-400',
-  lightGreen: 'bg-lime-200',
-};
+type ColorName = keyof typeof COLORS;
 
-type Variant = NonNullable<Props['variant']>;
-const variantStyles: Record<Variant, { badge: string; corner: string }> = {
-  default: { badge: '', corner: '' },
-  secondary: {
-    badge: 'bg-gray-600 text-white',
-    corner: 'bg-gray-500',
-  },
-  destructive: {
-    badge: 'bg-red-500 text-white',
-    corner: 'bg-red-600',
-  },
-  outline: {
-    badge: 'border border-gray-300 bg-transparent text-gray-700',
-    corner: 'bg-gray-400',
-  },
-};
+const COLORS = {
+	slate: { bg: 'bg-slate-600', text: 'text-zinc-900' },
+	gray: { bg: 'bg-gray-600', text: 'text-zinc-900' },
+	zinc: { bg: 'bg-zinc-600', text: 'text-zinc-900' },
+	neutral: { bg: 'bg-neutral-600', text: 'text-zinc-900' },
+	stone: { bg: 'bg-stone-600', text: 'text-zinc-900' },
+	red: { bg: 'bg-red-600', text: 'text-zinc-900' },
+	orange: { bg: 'bg-orange-600', text: 'text-zinc-900' },
+	amber: { bg: 'bg-amber-500', text: 'text-zinc-900' },
+	yellow: { bg: 'bg-yellow-500', text: 'text-zinc-900' },
+	lime: { bg: 'bg-lime-500', text: 'text-zinc-900' },
+	green: { bg: 'bg-green-600', text: 'text-zinc-900' },
+	emerald: { bg: 'bg-emerald-600', text: 'text-zinc-900' },
+	teal: { bg: 'bg-teal-600', text: 'text-zinc-900' },
+	cyan: { bg: 'bg-cyan-600', text: 'text-zinc-900' },
+	sky: { bg: 'bg-sky-600', text: 'text-zinc-900' },
+	blue: { bg: 'bg-blue-600', text: 'text-zinc-900' },
+	indigo: { bg: 'bg-indigo-600', text: 'text-zinc-900' },
+	violet: { bg: 'bg-violet-600', text: 'text-zinc-900' },
+	purple: { bg: 'bg-purple-600', text: 'text-zinc-900' },
+	fuchsia: { bg: 'bg-fuchsia-600', text: 'text-zinc-900' },
+	pink: { bg: 'bg-pink-600', text: 'text-zinc-900' },
+	rose: { bg: 'bg-rose-600', text: 'text-zinc-900' },
+	acid: { bg: 'bg-[#C8FF00]', text: 'text-zinc-900' },
+	azure: { bg: 'bg-[#48BAF3]', text: 'text-zinc-900' },
+	gold: { bg: 'bg-[#FFD400]', text: 'text-zinc-900' },
+	mint: { bg: 'bg-[#00FFA6]', text: 'text-zinc-900' },
+	'hot-pink': { bg: 'bg-[#FF00C3]', text: 'text-zinc-900' },
+} as const;
 
-const { label, variant = 'default', color = 'amber', dot = false, link = false } = Astro.props;
-const isDefault = variant === 'default';
-const v = variantStyles[variant];
-const bgClass = isDefault ? colorMap[color] : v.badge;
-const cornerClass = isDefault ? colorMap[color] : v.corner;
+const GHOST = { bg: 'bg-gray-200', text: 'text-zinc-900' };
+
+const { text, href, ghost = false, color = 'slate' } = Astro.props;
+
+const chosen = ghost ? GHOST : COLORS[color];
+
+const Tag = href ? 'a' : 'span';
+const external = href?.startsWith('http');
+const extraAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+
+const classes = [
+	'relative inline-flex w-fit items-center rounded-none px-2 py-[3px] cursor-pointer',
+	'font-dmmono text-[14px] font-normal leading-tight no-underline',
+	chosen.bg,
+	chosen.text,
+	'transition-[filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+	'hover:brightness-90',
+	'before:pointer-events-none before:absolute before:-top-1.5 before:-left-1.5 before:size-1.5',
+	'before:bg-inherit before:content-[""]',
+];
 ---
 
-<span
-  class={`relative inline-flex items-center pl-2 pr-1 py-0.5 text-xs font-medium ${variant !== 'outline' ? 'border-0' : ''} ${isDefault ? 'text-gray-900' : ''} ${bgClass}`}
-  style="border-radius: 0;"
+<Tag
+	class={classes.join(' ')}
+	data-badge
+	{...extraAttrs}
+	{...(href ? { href } : {})}
 >
-  {/* Small square juts out from top-left corner */}
-  <span class={`absolute -left-1 -top-1 h-1 w-1 border-0 ${cornerClass}`} style="border-radius: 0;" aria-hidden="true"
-  ></span>
-  {label}
-  {dot && <span class="ml-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />}
-  {
-    link && (
-      <span class="ml-1 shrink-0 text-[0.8em] opacity-80" aria-hidden="true">
-        ↗
-      </span>
-    )
-  }
-</span>
+	{text}
+</Tag>

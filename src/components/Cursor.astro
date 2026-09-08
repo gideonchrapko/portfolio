@@ -1,0 +1,237 @@
+---
+---
+
+<div
+	id="custom-cursor"
+	class="pointer-events-none fixed top-0 left-0 z-[150] opacity-0"
+	aria-hidden="true"
+>
+	<div id="custom-cursor-dot"></div>
+	<div id="cursor-bubble" class="absolute top-0 left-0">
+		<span id="cursor-bubble-text"></span>
+		<svg
+			id="cursor-bubble-arrow"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="3"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		>
+			<path d="M5 12h14" />
+			<path d="m13 6 6 6-6 6" />
+		</svg>
+	</div>
+</div>
+
+<script>
+	const cursor = document.getElementById('custom-cursor');
+	const dot = document.getElementById('custom-cursor-dot');
+	const bubble = document.getElementById('cursor-bubble');
+	const bubbleText = document.getElementById('cursor-bubble-text');
+	const bubbleArrow = document.getElementById('cursor-bubble-arrow');
+
+	if (cursor && dot && bubble) {
+		const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+		const COLORS = {
+			default: '#FF00C3', // hot-pink
+			link: '#48BAF3', // azure
+			name: '#FFD400', // gold
+			project: '#00FFA6', // mint
+			extra: '#C8FF00', // acid
+		};
+
+		let lastX = 0;
+		let lastY = 0;
+		let bubbleVisible = false;
+
+		function setState(color: string, interactive: boolean) {
+			dot.style.backgroundColor = color;
+			dot.classList.toggle('is-hovering', interactive);
+		}
+
+		function showBubble(text: string, color: string) {
+			bubbleText.textContent = text;
+			bubble.style.backgroundColor = color;
+			if (bubbleArrow) bubbleArrow.style.display = 'block';
+			bubbleVisible = true;
+			bubble.classList.add('is-visible');
+			layoutBubble();
+		}
+
+		function hideBubble() {
+			bubbleVisible = false;
+			bubble.classList.remove('is-visible');
+		}
+
+		function layoutBubble() {
+			if (!bubbleVisible) return;
+			const w = bubble.offsetWidth;
+			const h = bubble.offsetHeight;
+			const OFFSET = 18;
+			let tx = OFFSET;
+			let ty = OFFSET;
+			if (lastX + w + OFFSET + 6 > window.innerWidth) tx = -w - OFFSET;
+			if (lastY + h + OFFSET + 6 > window.innerHeight) ty = -h - OFFSET;
+			bubble.style.transform = `translate3d(${Math.round(tx)}px, ${Math.round(ty)}px, 0)`;
+		}
+
+		function setProject(el: HTMLElement) {
+			const color = el.dataset.projectColor || COLORS.project;
+			setState(color, false);
+			showBubble(el.dataset.projectTitle || '', color);
+		}
+
+		function setBadge(el: HTMLElement) {
+			const color = el.dataset.cursorBadgeColor || COLORS.extra;
+			setState(color, false);
+			showBubble(el.dataset.cursorBadge || '', color);
+		}
+
+		function apply(el: Element | null) {
+			if (!el) {
+				setState(COLORS.default, false);
+				hideBubble();
+				return;
+			}
+
+			const badge = el.closest<HTMLElement>('[data-cursor-badge]');
+			if (badge) return setBadge(badge);
+
+			const project = el.closest<HTMLElement>('[data-project-item]');
+			if (project) return setProject(project);
+
+			if (el.closest('[data-cursor]')) {
+				const custom = el.closest<HTMLElement>('[data-cursor]')!;
+				const keyOrColor = custom.dataset.cursor || 'default';
+				const color = /^#/.test(keyOrColor)
+					? keyOrColor
+					: (COLORS[keyOrColor as keyof typeof COLORS] ?? COLORS.default);
+				const interactive = keyOrColor !== 'default';
+				hideBubble();
+				return setState(color, interactive);
+			}
+
+			if (el.closest('a[href], button, [role="button"]')) {
+				hideBubble();
+				return setState(COLORS.link, true);
+			}
+
+			setState(COLORS.default, false);
+			hideBubble();
+		}
+
+		let raf = 0;
+		let active = false;
+
+		function position(x: number, y: number) {
+			lastX = x;
+			lastY = y;
+			if (!active) {
+				active = true;
+				cursor.style.opacity = '1';
+			}
+			cursor.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+			if (bubbleVisible) layoutBubble();
+		}
+
+		window.addEventListener('pointermove', (e) => {
+			position(e.clientX, e.clientY);
+		});
+
+		document.addEventListener('pointerover', (e) => {
+			const el = e.target instanceof Element ? e.target : null;
+			if (raf) cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(() => {
+				if (el) apply(el);
+				else {
+					setState(COLORS.default, false);
+					hideBubble();
+				}
+			});
+		});
+
+		document.addEventListener('pointerout', (e) => {
+			const to = e.relatedTarget;
+			if (
+				to instanceof Element &&
+				to.closest('a[href], button, [role="button"], [data-cursor], [data-project-item], [data-cursor-badge]')
+			)
+				return;
+			if (!reduced) {
+				apply(null);
+			} else {
+				setState(COLORS.default, false);
+				hideBubble();
+			}
+		});
+
+		document.addEventListener('mouseleave', () => {
+			setState(COLORS.default, false);
+			hideBubble();
+		});
+		window.addEventListener('blur', () => {
+			active = false;
+			cursor.style.opacity = '0';
+			hideBubble();
+		});
+	}
+</script>
+
+<style>
+	#custom-cursor-dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 0;
+		background: #ff00c3;
+		transform: translate(-50%, -50%) scale(1);
+		transition:
+			background-color 0.2s ease,
+			transform 0.18s ease;
+		will-change: transform;
+	}
+	#custom-cursor-dot.is-hovering {
+		transform: translate(-50%, -50%) scale(1.6);
+	}
+	#cursor-bubble {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		width: max-content;
+		max-width: 60vw;
+		padding: 4px 8px;
+		border-radius: 0;
+		opacity: 0;
+		font-family: var(--font-dmmono, 'DM Mono', ui-monospace, monospace);
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1;
+		white-space: nowrap;
+		color: #18181b;
+		transition:
+			opacity 0.12s ease,
+			background-color 0.2s ease;
+		pointer-events: none;
+		will-change: transform;
+	}
+	#cursor-bubble.is-visible {
+		opacity: 1;
+	}
+	#cursor-bubble-text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	#cursor-bubble-arrow {
+		display: none;
+		flex: none;
+		width: 10px;
+		height: 10px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		#custom-cursor-dot,
+		#cursor-bubble {
+			transition: none;
+		}
+	}
+</style>

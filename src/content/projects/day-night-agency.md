@@ -2,7 +2,7 @@
 title: Day Night Agency Website
 description: A dynamic marketing agency website built with Next.js and a headless Sanity CMS, featuring immersive Three.js 3D elements and a custom content dashboard for seamless project management.
 date: 2024-04-23
-category: engineering
+categories: [web-development]
 draft: false
 tags: [nextjs, figma, react, sanity.io]
 url: 'https://www.daynightagency.com/'

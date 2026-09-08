@@ -1,31 +1,138 @@
-@font-face {
-  font-family: 'PP Mori';
-  src: url('/fonts/PPMori-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: block;
+@import 'tailwindcss';
+
+@theme {
+	--font-sans: var(--font-atkinson);
+	--font-display: var(--font-mori, var(--font-atkinson));
 }
 
-@font-face {
-  font-family: 'PP Mori';
-  src: url('/fonts/PPMori-Italic.otf') format('opentype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: block;
+@utility font-dmmono {
+	font-family: var(--font-dmmono);
 }
 
-@font-face {
-  font-family: 'PP Mori';
-  src: url('/fonts/PPMori-Semibold.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: block;
+@utility font-mori {
+	font-family: var(--font-mori);
 }
 
-@font-face {
-  font-family: 'PP Mori';
-  src: url('/fonts/PPMori-Black.otf') format('opentype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: block;
+@layer base {
+	html {
+		-webkit-font-smoothing: antialiased;
+	}
+	@media (hover: hover) and (pointer: fine) {
+		* {
+			cursor: none !important;
+		}
+	}
+	body {
+		background: #fcfbf7;
+		color: #18181b;
+		font-family: var(--font-atkinson);
+		font-size: 16px;
+		line-height: 1.6;
+	}
 }
+
+@layer components {
+	.md-body {
+		font-size: 1.0625rem;
+		line-height: 1.75;
+		color: #3f3f46;
+	}
+	.md-body > * + * {
+		margin-top: 1.25rem;
+	}
+	.md-body h1,
+	.md-body h2,
+	.md-body h3,
+	.md-body h4,
+	.md-body h5,
+	.md-body h6 {
+		color: #18181b;
+		font-weight: 600;
+		line-height: 1.35;
+	}
+	.md-body h1 {
+		font-size: 2rem;
+		margin-top: 2.5rem;
+	}
+	.md-body h2 {
+		font-size: 1.5rem;
+		margin-top: 2.25rem;
+	}
+	.md-body h3 {
+		font-size: 1.25rem;
+		margin-top: 2rem;
+	}
+	.md-body h4 {
+		font-size: 1.0625rem;
+	}
+	.md-body a {
+		color: #2563eb;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+	.md-body a:hover {
+		color: #1d4ed8;
+	}
+	.md-body ul {
+		list-style-type: disc;
+		padding-left: 1.5rem;
+	}
+	.md-body ol {
+		list-style-type: decimal;
+		padding-left: 1.5rem;
+	}
+	.md-body li {
+		margin-top: 0.4em;
+	}
+	.md-body li > ul,
+	.md-body li > ol {
+		margin-top: 0.25em;
+	}
+	.md-body blockquote {
+		border-left: 4px solid #e4e4e7;
+		padding-left: 1rem;
+		color: #52525b;
+		font-style: italic;
+	}
+	.md-body code {
+		border-radius: 8px;
+		background: #f4f4f5;
+		padding: 0.15em 0.35em;
+		font-size: 0.875em;
+	}
+	.md-body pre {
+		overflow-x: auto;
+		border-radius: 8px;
+		background: #18181b;
+		color: #fafafa;
+		padding: 1rem;
+	}
+	.md-body pre code {
+		background: transparent;
+		border-radius: 0;
+		padding: 0;
+		color: inherit;
+		font-size: 0.875rem;
+	}
+	.md-body img {
+		border-radius: 8px;
+	}
+	.md-body hr {
+		border-top: 1px solid #e4e4e7;
+	}
+	.md-body table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.9375rem;
+	}
+	.md-body th,
+	.md-body td {
+		border: 1px solid #e4e4e7;
+		padding: 0.5rem 0.75rem;
+	}
+	.md-body th {
+		background: #fafafa;
+		text-align: left;
+	}
+}
+

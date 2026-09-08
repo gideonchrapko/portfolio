@@ -2,7 +2,9 @@
 title: Tay-K Worldwide E-commerce Build
 description: An immersive official website for Tay K built with Shopify Hydrogen and React, featuring interactive 3D visuals and an integrated storefront for exclusive merch and releases.
 date: 2023-03-25
-category: engineering
+categories:
+  - web-development
+  - creative-engineering
 draft: false
 tags: [e-commerce, 3d, shopify-hydrogen, remix]
 url: 'https://tayk-hydrogen-remix.gideonchrapko.workers.dev/'

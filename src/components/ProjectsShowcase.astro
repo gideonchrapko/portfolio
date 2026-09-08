@@ -1,0 +1,249 @@
+---
+import { getCollection } from 'astro:content';
+import Badge from './Badge.astro';
+import { CATEGORIES, FALLBACK_CATEGORY, type CategorySlug } from '../data/categories';
+
+const projects = (
+	await getCollection('projects', ({ data }) => !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function titleize(slug: string): string {
+	return slug
+		.split(/[-_]/)
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+}
+
+const tags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
+
+const HOVER_COLORS = ['#C8FF00', '#48BAF3', '#FFD400', '#00FFA6', '#FF00C3'];
+---
+
+{
+	projects.length > 0 && (
+		<div class="rise mt-20" id="projects" style="animation-delay: 360ms">
+			<div class="flex flex-wrap items-center gap-2.5" data-filter-bar>
+				{
+					tags.map((tag) => (
+						<button
+							type="button"
+							data-filter={tag}
+							aria-pressed="false"
+							class="project-filter-chip"
+						>
+							<Badge text={titleize(tag)} ghost />
+						</button>
+					))
+				}
+			</div>
+
+			<div
+				class="mt-10 grid grid-cols-1 gap-2 sm:grid-cols-2"
+				id="project-grid"
+			>
+				{
+					projects.map((project, index) => {
+						const cats = (project.data.categories?.length
+							? project.data.categories
+							: [FALLBACK_CATEGORY]
+						).map((raw) =>
+							raw && raw in CATEGORIES
+								? (raw as CategorySlug)
+								: FALLBACK_CATEGORY
+						);
+						return (
+						<a
+							data-project-item
+							data-project-title={project.data.title}
+							data-project-color={HOVER_COLORS[index % HOVER_COLORS.length]}
+							data-tags={project.data.tags.join(',')}
+							data-categories={cats.join(',')}
+							href={`/projects/${project.id}/`}
+							aria-label={project.data.title}
+							class="group block"
+						>
+						{
+							(project.data.images?.[0] ?? project.data.image) && (
+								<div class="relative overflow-hidden rounded-lg bg-zinc-100">
+									<img
+										src={project.data.images?.[0] ?? project.data.image}
+										alt=""
+										loading="lazy"
+										class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+									/>
+									<span class="project-card-badges absolute bottom-2 right-2 flex flex-wrap justify-end gap-2">
+										{cats.map((slug) => {
+											const meta = CATEGORIES[slug];
+											return <Badge text={meta.label} color={meta.color} />;
+										})}
+									</span>
+								</div>
+							)
+						}
+						</a>
+						);
+					})
+				}
+			</div>
+		</div>
+	)
+}
+
+<style>
+	.rise {
+		animation: rise-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	}
+
+	@keyframes rise-in {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.rise {
+			animation: none;
+		}
+	}
+
+	.project-filter-chip {
+		background: none;
+		border: 0;
+		padding: 0;
+		line-height: 1;
+		transition: transform 0.15s ease, opacity 0.15s ease;
+	}
+	.project-filter-chip:hover {
+		opacity: 0.85;
+	}
+	.project-filter-chip.is-active {
+		transform: translateY(-2px);
+	}
+	.project-filter-chip.is-active [data-badge] {
+		box-shadow: 0 0 0 2px #18181b;
+	}
+	[data-project-item].is-hidden {
+		display: none;
+	}
+	.project-card-badges :global([data-badge]) {
+		padding-inline: 0.7rem;
+	}
+</style>
+
+<script>
+	const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+	const items = Array.from(document.querySelectorAll<HTMLElement>('[data-project-item]'));
+	const selected = new Set<string>();
+	const categories = new Set<string>();
+
+	function apply() {
+		buttons.forEach((button) => {
+			const on = button.dataset.filter ? selected.has(button.dataset.filter) : false;
+			button.classList.toggle('is-active', on);
+			button.setAttribute('aria-pressed', String(on));
+		});
+		items.forEach((item) => {
+			const itemCategories = (item.dataset.categories || '').split(',').filter(Boolean);
+			const matchesCategory =
+				categories.size === 0 ||
+				itemCategories.some((cat) => categories.has(cat));
+			const tags = (item.dataset.tags || '').split(',').filter(Boolean);
+			const matchesTags = selected.size === 0 || tags.some((tag) => selected.has(tag));
+			item.classList.toggle('is-hidden', !(matchesCategory && matchesTags));
+		});
+	}
+
+	const GHOST_BG = 'bg-gray-200';
+	const COLOR_BGS = [
+		'bg-[#C8FF00]',
+		'bg-[#48BAF3]',
+		'bg-[#FFD400]',
+		'bg-[#00FFA6]',
+		'bg-[#FF00C3]',
+	];
+
+	function pickColor(current?: string): string {
+		const options = COLOR_BGS.filter((color) => color !== current);
+		return options[Math.floor(Math.random() * options.length)];
+	}
+
+	function setActive(badge: HTMLElement) {
+		const current = badge.dataset.badgeBg;
+		if (current) badge.classList.remove(current);
+		badge.classList.remove(GHOST_BG);
+		const next = pickColor(current);
+		badge.classList.add(next);
+		badge.dataset.badgeBg = next;
+	}
+
+	function setInactive(badge: HTMLElement) {
+		const current = badge.dataset.badgeBg;
+		if (current) badge.classList.remove(current);
+		delete badge.dataset.badgeBg;
+		badge.classList.add(GHOST_BG);
+	}
+
+	function readTagParam(): Set<string> {
+		const value = new URLSearchParams(location.search).get('tag');
+		return new Set(value ? value.split(',') : []);
+	}
+
+	function readCategoryParam(): Set<string> {
+		const value = new URLSearchParams(location.search).get('category');
+		return new Set(value ? value.split(',') : []);
+	}
+
+	window.addEventListener('gideon:category-change', (event) => {
+		const detail = (event as CustomEvent<string[]>).detail ?? [];
+		categories.clear();
+		detail.forEach((value) => categories.add(value));
+		apply();
+	});
+
+	function writeTagParam() {
+		const url = new URL(location.href);
+		if (selected.size === 0) {
+			url.searchParams.delete('tag');
+		} else {
+			url.searchParams.set('tag', [...selected].join(','));
+		}
+		const search = url.search.replace(/%2C/g, ',');
+		history.replaceState(null, '', `${url.pathname}${search}`);
+	}
+
+	buttons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const filter = button.dataset.filter;
+			if (!filter) return;
+			const badge = button.querySelector<HTMLElement>('[data-badge]');
+			const active = selected.has(filter);
+			if (active) {
+				selected.delete(filter);
+				if (badge) setInactive(badge);
+			} else {
+				selected.add(filter);
+				if (badge) setActive(badge);
+			}
+			apply();
+			writeTagParam();
+		});
+	});
+
+	for (const value of readTagParam()) {
+		if (selected.has(value)) continue;
+		const button = buttons.find((b) => b.dataset.filter === value);
+		if (!button) continue;
+		selected.add(value);
+		const badge = button.querySelector<HTMLElement>('[data-badge]');
+		if (badge) setActive(badge);
+	}
+	for (const value of readCategoryParam()) {
+		categories.add(value);
+	}
+	apply();
+</script>

@@ -2,7 +2,7 @@
 title: Unorthodox Studio
 description: Agency website for Unorthodox Studio built with Next.js and Sanity CMS
 date: 2024-06-01
-category: engineering
+categories: [web-development]
 draft: false
 tags: [nextjs, react, sanity.io, figma]
 url: 'https://unorthodoxstudio.ca/'

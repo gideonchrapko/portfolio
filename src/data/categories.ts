@@ -1,31 +1,12 @@
-/**
- * Project categories: single source of truth for slugs, labels, and badge styling.
- * Use with CategoryBadge and anywhere you need category order/labels (nav, projects index).
- */
+export const CATEGORIES = {
+	'brand-design': { label: 'Brand Design', color: 'acid' },
+	'design-systems': { label: 'Design Systems', color: 'azure' },
+	'web-development': { label: 'Web Development', color: 'gold' },
+	'creative-engineering': { label: 'Creative Engineering', color: 'mint' },
+	'visual-communications': { label: 'Visual Communications', color: 'hot-pink' },
+	'motion-design': { label: 'Motion Design', color: 'fuchsia' },
+} as const;
 
-export const categorySlugs = ['graphic-design', 'motion', 'engineering'] as const;
-export type CategorySlug = (typeof categorySlugs)[number];
+export type CategorySlug = keyof typeof CATEGORIES;
 
-export type CategoryBadgeColor =
-  'amber' | 'emerald' | 'rose' | 'sky' | 'violet' | 'orange' | 'lime' | 'cyan' | 'fuchsia' | 'teal';
-
-export interface CategoryConfig {
-  slug: CategorySlug;
-  label: string;
-  /** Badge color key for CategoryBadge */
-  badgeColor: CategoryBadgeColor;
-}
-
-export const categories: CategoryConfig[] = [
-  { slug: 'engineering', label: 'engineering', badgeColor: 'sky' },
-  { slug: 'motion', label: 'motion', badgeColor: 'violet' },
-  { slug: 'graphic-design', label: 'design', badgeColor: 'amber' },
-];
-
-export const categoryLabels: Record<CategorySlug, string> = Object.fromEntries(
-  categories.map((c) => [c.slug, c.label]),
-) as Record<CategorySlug, string>;
-
-export const categoryBySlug: Record<CategorySlug, CategoryConfig> = Object.fromEntries(
-  categories.map((c) => [c.slug, c]),
-) as Record<CategorySlug, CategoryConfig>;
+export const FALLBACK_CATEGORY: CategorySlug = 'brand-design';

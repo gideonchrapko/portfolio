@@ -2,11 +2,11 @@
 title: Napster Holiday Motion Graphics
 description: A holiday promotional video series for Napster created in Illustrator and After Effects, blending nostalgic storytelling with dynamic visuals to celebrate the brand’s cultural legacy.
 date: 2022-06-13
-category: motion
+categories: [motion-design]
 draft: false
 tags: [illustrator, animation, after-effects]
 roles:
-  - motion designer
+  - Motion Designer
 tools:
   - Illustrator
   - After Effects

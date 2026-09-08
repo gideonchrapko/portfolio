@@ -1,56 +1,221 @@
 ---
-import NavPills from './NavPills.astro';
-
-interface Props {
-  /** Animate the header in on mount (used on the home page). */
-  animate?: boolean;
-}
-
-const { animate = false } = Astro.props;
+const year = new Date().getFullYear();
 ---
 
-<header
-  class:list={[
-    'fixed left-1/2 top-[10px] z-50 w-fit -translate-x-1/2 rounded-3xl bg-[#D8FF5D] px-4 py-1 shadow-sm',
-    animate && 'animate-nav',
-  ]}
->
-  <nav class="flex h-12 flex-nowrap items-center justify-between" aria-label="Main">
-    <a
-      href="/"
-      class="bg-[#A6DE00] p-1 rounded-lg flex shrink-0 items-center text-gray-900 no-underline hover:opacity-80"
-      aria-label="Home"
-    >
-      <svg width="25" height="28" viewBox="0 0 30 33" fill="none" xmlns="http://www.w3.org/2000/svg" class="block">
-        <path
-          d="M21.7259 5.39425C23.2384 5.39425 24.4575 6.65003 24.3993 8.17552C24.3453 9.58018 23.1888 10.7173 21.782 10.7453C21.7626 10.7453 21.7431 10.7453 21.7259 10.7453C20.8045 10.7453 19.9932 10.2793 19.5121 9.57155C19.2531 9.1918 18.8259 8.96524 18.3663 8.96524H18.2563C17.7945 8.96524 17.3673 9.19827 17.1062 9.58018C16.6251 10.2836 15.8138 10.7453 14.8968 10.7453C13.9797 10.7453 13.1706 10.2836 12.6873 9.58018C12.4262 9.19827 11.999 8.96524 11.5372 8.96524H11.4229C10.9611 8.96524 10.5382 9.20259 10.275 9.58234C10.0894 9.85421 9.85421 10.0872 9.5845 10.275C9.20474 10.536 8.9674 10.9611 8.9674 11.4229V12.8189C8.9674 13.2806 9.20043 13.7079 9.58018 13.9689C10.2836 14.4501 10.7432 15.2592 10.7432 16.1763C10.7432 17.0933 10.2814 17.9024 9.58018 18.3836C9.20043 18.6447 8.9674 19.0719 8.9674 19.5336V20.9297C8.9674 21.3914 9.20474 21.8165 9.5845 22.0776C9.85421 22.2631 10.0894 22.4983 10.275 22.7702C10.536 23.15 10.9611 23.3873 11.4229 23.3873H11.5372C11.999 23.3873 12.4262 23.1543 12.6873 22.7724C13.1684 22.0689 13.9797 21.6072 14.8968 21.6072C15.8138 21.6072 16.6229 22.0689 17.1062 22.7724C17.3673 23.1543 17.7945 23.3873 18.2563 23.3873H18.3706C18.8324 23.3873 19.2575 23.15 19.5185 22.7702C19.7041 22.4983 19.9393 22.2631 20.2112 22.0776C20.5931 21.8165 20.8283 21.3914 20.8283 20.9297V19.5336C20.8283 19.0719 20.5909 18.6468 20.2112 18.3858C19.9393 18.2002 19.7041 17.965 19.5185 17.6931C19.2575 17.3112 18.8324 17.076 18.3706 17.076H18.2563C17.7945 17.076 17.3673 17.3091 17.1062 17.691C16.6251 18.3944 15.8159 18.8561 14.8968 18.8561C13.3842 18.8561 12.1651 17.6004 12.2234 16.0749C12.2773 14.6702 13.4338 13.5331 14.8407 13.505C14.8601 13.505 14.8795 13.505 14.8968 13.505C15.8181 13.505 16.6294 13.9711 17.1106 14.6788C17.3695 15.0586 17.7967 15.2851 18.2563 15.2851H18.3663C18.8259 15.2851 19.2531 15.0586 19.5121 14.6788C19.9932 13.9711 20.8045 13.505 21.7259 13.505C21.7777 13.505 21.8273 13.505 21.8791 13.5094C23.2276 13.5849 24.3216 14.6788 24.3971 16.0274C24.4532 17.0113 23.9764 17.8873 23.2276 18.3944C22.8479 18.6533 22.6213 19.0805 22.6213 19.5401V20.9275C22.6213 21.3871 22.8479 21.8143 23.2276 22.0733C23.9742 22.5803 24.451 23.4563 24.3971 24.4403C24.3216 25.7888 23.2276 26.8828 21.8791 26.9583C21.8273 26.9604 21.7755 26.9626 21.7259 26.9626C20.8045 26.9626 19.9932 26.4965 19.5121 25.7888C19.2531 25.4091 18.8259 25.1825 18.3663 25.1825H18.2563C17.7945 25.1825 17.3673 25.4155 17.1062 25.7974C16.6251 26.5009 15.8159 26.9626 14.8968 26.9626C13.9776 26.9626 13.1706 26.5009 12.6873 25.7974C12.4262 25.4155 11.999 25.1825 11.5372 25.1825H11.4272C10.9676 25.1825 10.5404 25.4112 10.2814 25.7888C9.80027 26.4965 8.98897 26.9626 8.06764 26.9626C8.01585 26.9626 7.96622 26.9626 7.91444 26.9583C6.56588 26.8828 5.47192 25.7888 5.39641 24.4403C5.34246 23.4563 5.81931 22.5803 6.56588 22.0733C6.94563 21.8143 7.17435 21.3871 7.17435 20.9275V19.5423C7.17435 19.0805 6.94132 18.6533 6.5594 18.3922C5.85384 17.9111 5.39209 17.0998 5.39209 16.1827C5.39209 15.2657 5.85384 14.4544 6.5594 13.9733C6.94132 13.7122 7.17435 13.285 7.17435 12.8232V11.438C7.17435 10.9784 6.94563 10.5511 6.56588 10.2922C5.81716 9.78517 5.34031 8.90914 5.39641 7.92523C5.47192 6.57667 6.56588 5.48271 7.91444 5.40719C7.96622 5.40504 8.01801 5.40288 8.06764 5.40288C8.98897 5.40288 9.80027 5.86894 10.2814 6.57667C10.5404 6.95642 10.9676 7.18298 11.4272 7.18298H11.5372C11.999 7.18298 12.4262 6.94995 12.6873 6.56804C13.1684 5.86463 13.9797 5.40288 14.8968 5.40288C15.8138 5.40288 16.6229 5.86463 17.1062 6.56804C17.3673 6.94995 17.7945 7.18298 18.2563 7.18298H18.3663C18.8281 7.18298 19.2553 6.94995 19.5164 6.56804C19.9976 5.86463 20.8088 5.40288 21.7259 5.40288M21.7259 0C20.5283 0 19.3653 0.265397 18.3124 0.757352C17.2594 0.265397 16.0964 0 14.8989 0C13.7014 0 12.5384 0.265397 11.4854 0.757352C10.4303 0.265397 9.26948 0 8.06979 0C7.91876 0 7.76556 0.0043154 7.61452 0.0129462C3.50842 0.241662 0.241662 3.51273 0.0129462 7.61668C-0.0755195 9.2069 0.317182 10.7712 1.09611 12.1155C0.388386 13.3303 0 14.7263 0 16.1763C0 17.6262 0.388386 19.0201 1.09611 20.2371C0.317182 21.5813 -0.0755195 23.1435 0.0129462 24.7337C0.241662 28.8398 3.51058 32.1087 7.61452 32.3396C7.76556 32.3482 7.91876 32.3525 8.06979 32.3525C9.26732 32.3525 10.4303 32.0871 11.4833 31.5952C12.5362 32.0871 13.6992 32.3525 14.8968 32.3525C16.0943 32.3525 17.2573 32.0871 18.3102 31.5952C19.3632 32.0871 20.5262 32.3525 21.7237 32.3525C21.8748 32.3525 22.0279 32.3482 22.179 32.3396C26.2829 32.1087 29.5518 28.842 29.7806 24.738C29.869 23.1435 29.4763 21.577 28.6931 20.2306C29.4742 18.882 29.869 17.3155 29.7806 15.721C29.7072 14.4113 29.3253 13.1879 28.7039 12.1198C29.3469 11.0129 29.7353 9.74201 29.787 8.3805C29.8712 6.19907 29.0491 4.04569 27.5366 2.47488C26.024 0.901918 23.903 0.0021577 21.7216 0.0021577L21.7259 0Z"
-          fill="currentColor"></path>
-      </svg>
-    </a>
-    <NavPills />
-  </nav>
+<header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 sm:py-6">
+	<a href="/" aria-label="Gideon Chrapko — home" data-logo-link class="text-black">
+		<svg
+			width="25"
+			height="28"
+			viewBox="0 0 30 33"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			class="block transition-colors duration-300"
+		>
+			<path
+				d="M21.7259 5.39425C23.2384 5.39425 24.4575 6.65003 24.3993 8.17552C24.3453 9.58018 23.1888 10.7173 21.782 10.7453C21.7626 10.7453 21.7431 10.7453 21.7259 10.7453C20.8045 10.7453 19.9932 10.2793 19.5121 9.57155C19.2531 9.1918 18.8259 8.96524 18.3663 8.96524H18.2563C17.7945 8.96524 17.3673 9.19827 17.1062 9.58018C16.6251 10.2836 15.8138 10.7453 14.8968 10.7453C13.9797 10.7453 13.1706 10.2836 12.6873 9.58018C12.4262 9.19827 11.999 8.96524 11.5372 8.96524H11.4229C10.9611 8.96524 10.5382 9.20259 10.275 9.58234C10.0894 9.85421 9.85421 10.0872 9.5845 10.275C9.20474 10.536 8.9674 10.9611 8.9674 11.4229V12.8189C8.9674 13.2806 9.20043 13.7079 9.58018 13.9689C10.2836 14.4501 10.7432 15.2592 10.7432 16.1763C10.7432 17.0933 10.2814 17.9024 9.58018 18.3836C9.20043 18.6447 8.9674 19.0719 8.9674 19.5336V20.9297C8.9674 21.3914 9.20474 21.8165 9.5845 22.0776C9.85421 22.2631 10.0894 22.4983 10.275 22.7702C10.536 23.15 10.9611 23.3873 11.4229 23.3873H11.5372C11.999 23.3873 12.4262 23.1543 12.6873 22.7724C13.1684 22.0689 13.9797 21.6072 14.8968 21.6072C15.8138 21.6072 16.6229 22.0689 17.1062 22.7724C17.3673 23.1543 17.7945 23.3873 18.2563 23.3873H18.3706C18.8324 23.3873 19.2575 23.15 19.5185 22.7702C19.7041 22.4983 19.9393 22.2631 20.2112 22.0776C20.5931 21.8165 20.8283 21.3914 20.8283 20.9297V19.5336C20.8283 19.0719 20.5909 18.6468 20.2112 18.3858C19.9393 18.2002 19.7041 17.965 19.5185 17.6931C19.2575 17.3112 18.8324 17.076 18.3706 17.076H18.2563C17.7945 17.076 17.3673 17.3091 17.1062 17.691C16.6251 18.3944 15.8159 18.8561 14.8968 18.8561C13.3842 18.8561 12.1651 17.6004 12.2234 16.0749C12.2773 14.6702 13.4338 13.5331 14.8407 13.505C14.8601 13.505 14.8795 13.505 14.8968 13.505C15.8181 13.505 16.6294 13.9711 17.1106 14.6788C17.3695 15.0586 17.7967 15.2851 18.2563 15.2851H18.3663C18.8259 15.2851 19.2531 15.0586 19.5121 14.6788C19.9932 13.9711 20.8045 13.505 21.7259 13.505C21.7777 13.505 21.8273 13.505 21.8791 13.5094C23.2276 13.5849 24.3216 14.6788 24.3971 16.0274C24.4532 17.0113 23.9764 17.8873 23.2276 18.3944C22.8479 18.6533 22.6213 19.0805 22.6213 19.5401V20.9275C22.6213 21.3871 22.8479 21.8143 23.2276 22.0733C23.9742 22.5803 24.451 23.4563 24.3971 24.4403C24.3216 25.7888 23.2276 26.8828 21.8791 26.9583C21.8273 26.9604 21.7755 26.9626 21.7259 26.9626C20.8045 26.9626 19.9932 26.4965 19.5121 25.7888C19.2531 25.4091 18.8259 25.1825 18.3663 25.1825H18.2563C17.7945 25.1825 17.3673 25.4155 17.1062 25.7974C16.6251 26.5009 15.8159 26.9626 14.8968 26.9626C13.9776 26.9626 13.1706 26.5009 12.6873 25.7974C12.4262 25.4155 11.999 25.1825 11.5372 25.1825H11.4272C10.9676 25.1825 10.5404 25.4112 10.2814 25.7888C9.80027 26.4965 8.98897 26.9626 8.06764 26.9626C8.01585 26.9626 7.96622 26.9626 7.91444 26.9583C6.56588 26.8828 5.47192 25.7888 5.39641 24.4403C5.34246 23.4563 5.81931 22.5803 6.56588 22.0733C6.94563 21.8143 7.17435 21.3871 7.17435 20.9275V19.5423C7.17435 19.0805 6.94132 18.6533 6.5594 18.3922C5.85384 17.9111 5.39209 17.0998 5.39209 16.1827C5.39209 15.2657 5.85384 14.4544 6.5594 13.9733C6.94132 13.7122 7.17435 13.285 7.17435 12.8232V11.438C7.17435 10.9784 6.94563 10.5511 6.56588 10.2922C5.81716 9.78517 5.34031 8.90914 5.39641 7.92523C5.47192 6.57667 6.56588 5.48271 7.91444 5.40719C7.96622 5.40504 8.01801 5.40288 8.06764 5.40288C8.98897 5.40288 9.80027 5.86894 10.2814 6.57667C10.5404 6.95642 10.9676 7.18298 11.4272 7.18298H11.5372C11.999 7.18298 12.4262 6.94995 12.6873 6.56804C13.1684 5.86463 13.9797 5.40288 14.8968 5.40288C15.8138 5.40288 16.6229 5.86463 17.1062 6.56804C17.3673 6.94995 17.7945 7.18298 18.2563 7.18298H18.3663C18.8281 7.18298 19.2553 6.94995 19.5164 6.56804C19.9976 5.86463 20.8088 5.40288 21.7259 5.40288M21.7259 0C20.5283 0 19.3653 0.265397 18.3124 0.757352C17.2594 0.265397 16.0964 0 14.8989 0C13.7014 0 12.5384 0.265397 11.4854 0.757352C10.4303 0.265397 9.26948 0 8.06979 0C7.91876 0 7.76556 0.0043154 7.61452 0.0129462C3.50842 0.241662 0.241662 3.51273 0.0129462 7.61668C-0.0755195 9.2069 0.317182 10.7712 1.09611 12.1155C0.388386 13.3303 0 14.7263 0 16.1763C0 17.6262 0.388386 19.0201 1.09611 20.2371C0.317182 21.5813 -0.0755195 23.1435 0.0129462 24.7337C0.241662 28.8398 3.51058 32.1087 7.61452 32.3396C7.76556 32.3482 7.91876 32.3525 8.06979 32.3525C9.26732 32.3525 10.4303 32.0871 11.4833 31.5952C12.5362 32.0871 13.6992 32.3525 14.8968 32.3525C16.0943 32.3525 17.2573 32.0871 18.3102 31.5952C19.3632 32.0871 20.5262 32.3525 21.7237 32.3525C21.8748 32.3525 22.0279 32.3482 22.179 32.3396C26.2829 32.1087 29.5518 28.842 29.7806 24.738C29.869 23.1435 29.4763 21.577 28.6931 20.2306C29.4742 18.882 29.869 17.3155 29.7806 15.721C29.7072 14.4113 29.3253 13.1879 28.7039 12.1198C29.3469 11.0129 29.7353 9.74201 29.787 8.3805C29.8712 6.19907 29.0491 4.04569 27.5366 2.47488C26.024 0.901918 23.903 0.0021577 21.7216 0.0021577L21.7259 0Z"
+				fill="currentColor"
+			></path>
+		</svg>
+	</a>
+	<div class="flex items-center gap-x-3 font-dmmono text-[12px] leading-normal tracking-[-0.24px] text-black sm:gap-x-5">
+		<a
+			href="#"
+			target="_blank"
+			rel="noopener noreferrer"
+			data-cursor-badge="gideon-chrapko"
+			data-cursor-badge-color="#48BAF3"
+			class="whitespace-nowrap no-underline hover:underline underline-offset-2"
+		>
+			LinkedIn
+		</a>
+		<a
+			href="https://github.com/gideonchrapko"
+			target="_blank"
+			rel="noopener noreferrer"
+			data-cursor-card="github-card"
+			class="whitespace-nowrap no-underline hover:underline underline-offset-2"
+		>
+			GitHub
+		</a>
+		<span aria-hidden="true" class="text-zinc-400">/</span>
+		<span class="whitespace-nowrap text-zinc-400">&copy; {year}</span>
+	</div>
 </header>
 
+<template id="github-card">
+	<div class="code-sidebar w-72 rounded-none border border-gray-700 bg-[#0d0d0d] p-4 shadow-xl">
+		<div class="space-y-2.5 text-left text-sm text-gray-300">
+			<p class="text-xs text-gray-400">Selected repos &amp; active projects.</p>
+			<div>
+				<p class="mb-1 text-xs font-medium uppercase tracking-wider text-gray-500">— Core</p>
+				<p class="ml-2 text-gray-300">TypeScript · JavaScript · HTML</p>
+			</div>
+			<div>
+				<p class="mb-1 text-xs font-medium uppercase tracking-wider text-gray-500">— Frameworks</p>
+				<p class="ml-2 text-gray-300">React · Next.js · Tailwind CSS · Astro</p>
+			</div>
+			<p class="border-t border-gray-700 pt-2 text-xs text-gray-400">
+				<span>27 public repos</span> · <span class="text-gray-100">View GitHub</span>
+			</p>
+			<div class="border-t border-gray-700 pt-2">
+				<p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">— Achievements</p>
+				<div class="flex gap-3">
+					<div class="flex flex-1 flex-col items-center gap-1.5">
+						<img src="https://github.githubassets.com/assets/pull-shark-default-498c279a747d.png" alt="Pull Shark" class="h-16 w-16" loading="lazy" />
+						<span class="flex items-center gap-1 text-[9px] leading-tight text-gray-500">
+							Pull Shark
+							<span class="inline-flex items-center border border-gray-500 bg-gray-700 px-1.5 text-[8px] font-semibold leading-[14px] text-gray-300 shadow-sm">x3</span>
+						</span>
+					</div>
+					<div class="flex flex-1 flex-col items-center gap-1.5">
+						<img src="https://github.githubassets.com/assets/quickdraw-default-39c6aec8ff89.png" alt="Quickdraw" class="h-16 w-16" loading="lazy" />
+						<span class="text-center text-[9px] leading-tight text-gray-500">Quickdraw</span>
+					</div>
+					<div class="flex flex-1 flex-col items-center gap-1.5">
+						<img src="https://github.githubassets.com/assets/yolo-default-be0bbff04951.png" alt="YOLO" class="h-16 w-16" loading="lazy" />
+						<span class="text-center text-[9px] leading-tight text-gray-500">YOLO</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<div
+	id="cursor-card"
+	class="pointer-events-none fixed top-0 left-0 z-[140] will-change-transform"
+	aria-hidden="true"
+>
+	<div
+		id="cursor-card-inner"
+		class="origin-top-left transition-[opacity,transform] duration-200 ease-out opacity-0 scale-95"
+	></div>
+</div>
+
 <style>
-  .animate-nav {
-    animation: nav-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-
-  @keyframes nav-in {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-nav {
-      animation: none;
-      opacity: 1;
-    }
-  }
+	#cursor-card-inner img {
+		pointer-events: none;
+	}
 </style>
+
+<script>
+	const COLORS = ['#C8FF00', '#48BAF3', '#FFD400', '#00FFA6', '#FF00C3'];
+
+	const link = document.querySelector<HTMLElement>('[data-logo-link]');
+	if (link) {
+		const svg = link.querySelector('svg');
+		let last = '';
+
+		function pickColor() {
+			const options = COLORS.filter((color) => color !== last);
+			last = options[Math.floor(Math.random() * options.length)];
+			return last;
+		}
+
+		link.addEventListener('mouseenter', () => {
+			if (svg) svg.style.color = pickColor();
+		});
+		link.addEventListener('mouseleave', () => {
+			if (svg) svg.style.color = '';
+		});
+	}
+
+	const TRIGGER = '[data-cursor-card]';
+
+	const root = document.getElementById('cursor-card');
+	const inner = document.getElementById('cursor-card-inner');
+
+	if (root && inner) {
+		const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+		let current: HTMLElement | null = null;
+		let targetX = 0;
+		let targetY = 0;
+		let cursorX = 0;
+		let cursorY = 0;
+		let raf = 0;
+
+		function settle() {
+			cursorX = targetX;
+			cursorY = targetY;
+			root.style.transform = `translate3d(${Math.round(cursorX)}px, ${Math.round(cursorY)}px, 0)`;
+		}
+
+		function loop() {
+			raf = 0;
+			if (!current) return;
+			const k = reduced ? 1 : 0.16;
+			cursorX += (targetX - cursorX) * k;
+			cursorY += (targetY - cursorY) * k;
+			if (!reduced && (Math.abs(targetX - cursorX) > 0.5 || Math.abs(targetY - cursorY) > 0.5)) {
+				raf = requestAnimationFrame(loop);
+			}
+			root.style.transform = `translate3d(${Math.round(cursorX)}px, ${Math.round(cursorY)}px, 0)`;
+		}
+
+		function show() {
+			inner.classList.remove('opacity-0', 'scale-95');
+			inner.classList.add('opacity-100', 'scale-100');
+			if (!raf) raf = requestAnimationFrame(loop);
+		}
+
+		function hide() {
+			current = null;
+			if (raf) {
+				cancelAnimationFrame(raf);
+				raf = 0;
+			}
+			inner.classList.remove('opacity-100', 'scale-100');
+			inner.classList.add('opacity-0', 'scale-95');
+		}
+
+		function place(e: MouseEvent) {
+			if (!current) return;
+			const w = inner.offsetWidth || 288;
+			const h = inner.offsetHeight || 320;
+			let ox = e.clientX + 18;
+			let oy = e.clientY + 18;
+			if (ox + w > window.innerWidth - 8) ox = Math.max(8, e.clientX - w - 18);
+			if (oy + h > window.innerHeight - 8) oy = Math.max(8, e.clientY - h - 18);
+			targetX = ox;
+			targetY = oy;
+		}
+
+		function activate(el: HTMLElement, e: MouseEvent) {
+			const tplId = el.dataset.cursorCard;
+			const tpl = tplId ? document.getElementById(tplId) : null;
+			current = el;
+			if (tpl) {
+				inner.innerHTML = '';
+				inner.append(tpl.content.cloneNode(true));
+			}
+			place(e);
+			settle();
+			show();
+		}
+
+		document.addEventListener('mouseover', (e) => {
+			const target =
+				e.target instanceof Element
+					? e.target.closest<HTMLElement>(TRIGGER)
+					: null;
+			if (target) {
+				if (target !== current) activate(target, e);
+				else place(e);
+				if (!raf) raf = requestAnimationFrame(loop);
+			} else if (current) {
+				hide();
+			}
+		});
+
+		document.addEventListener('mousemove', (e) => {
+			if (!current) return;
+			place(e);
+			if (!raf) raf = requestAnimationFrame(loop);
+		});
+
+		document.addEventListener('mouseleave', hide);
+		window.addEventListener('blur', hide);
+	}
+</script>
