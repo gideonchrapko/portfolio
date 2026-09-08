@@ -144,6 +144,11 @@
       "source": "/akcelo",
       "destination": "https://gideonchrapko.com/?utm_source=akcelo&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/ackelo",
+      "destination": "https://gideonchrapko.com/?utm_source=akcelo&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
