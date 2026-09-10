@@ -159,6 +159,11 @@
       "source": "/phoenix",
       "destination": "https://gideonchrapko.com/?utm_source=phoenix&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/lug",
+      "destination": "https://gideonchrapko.com/?utm_source=lug&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
