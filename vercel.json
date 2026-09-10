@@ -154,6 +154,11 @@
       "source": "/policyme",
       "destination": "https://gideonchrapko.com/?utm_source=policyme&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/phoenix",
+      "destination": "https://gideonchrapko.com/?utm_source=phoenix&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
