@@ -9,6 +9,7 @@ const mediaVideo = z.union([
 		webm: z.string().optional(),
 		mux: z.string().optional(),
 		controls: z.boolean().optional(),
+		backgroundImage: z.string().optional(),
 	}),
 ]);
 

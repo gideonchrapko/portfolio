@@ -23,6 +23,10 @@ sections:
       - /projects/botpress-blog/design-system-03.webp
       - /projects/botpress-blog/design-system-04.webp
       - /projects/botpress-blog/design-system-05.webp
+  - title: Web
+    videos:
+      - mux: 004LUBCGdA01g6i201jpJBF945SdbsYnlWrkqzTVM4I9bc
+        backgroundImage: /projects/web-bg.png
   - title: Image Generator
-    embed: https://botpress-marketing-tools.vercel.app/embed/image-generator?family=blog-image-generator3
+    embed: https://botpress-marketing-tools.vercel.app/embed/image-generator?family=blog-image-generator
 ---

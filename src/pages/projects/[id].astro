@@ -139,19 +139,30 @@ function muxPlaybackId(idOrUrl: string): string {
 ? 'w-full max-w-[600px] mx-auto block rounded-lg'
 								: 'w-full rounded-lg';
 								if (typeof video === 'object' && video.mux) {
-									return (
-										<div class="w-full max-w-[600px] mx-auto">
-											<mux-player
-												playback-id={muxPlaybackId(video.mux)}
-												class="w-full rounded-lg"
-												stream-type="on-demand"
-												autoplay={showControls ? undefined : 'muted'}
-												loop={showControls ? undefined : true}
-												muted={showControls ? undefined : true}
-												default-hidden-captions
-											/>
-										</div>
+									const player = (
+										<mux-player
+											playback-id={muxPlaybackId(video.mux)}
+											class="w-full rounded-lg"
+											stream-type="on-demand"
+											autoplay={showControls ? undefined : 'muted'}
+											loop={showControls ? undefined : true}
+											muted={showControls ? undefined : true}
+											default-hidden-captions
+										/>
 									);
+									if (video.backgroundImage) {
+										return (
+											<div
+												class="w-full rounded-lg bg-cover bg-center px-4 py-12 sm:py-20"
+												style={`background-image: url(${video.backgroundImage})`}
+											>
+												<div class="mx-auto w-full max-w-[900px] overflow-hidden rounded-lg">
+													{player}
+												</div>
+											</div>
+										);
+									}
+									return <div class="w-full max-w-[600px] mx-auto">{player}</div>;
 								}
 								return typeof video === 'string' ? (
 									<video src={video} class={videoClass} playsinline {...attrs} />
@@ -244,19 +255,30 @@ function muxPlaybackId(idOrUrl: string): string {
 													? 'w-full max-w-[600px] mx-auto block rounded-lg'
 													: 'w-full rounded-lg';
 												if (typeof video === 'object' && video.mux) {
-													return (
-														<div class="w-full max-w-[600px] mx-auto">
-															<mux-player
-																playback-id={muxPlaybackId(video.mux)}
-																class="w-full rounded-lg"
-																stream-type="on-demand"
-																autoplay={showControls ? undefined : 'muted'}
-																loop={showControls ? undefined : true}
-																muted={showControls ? undefined : true}
-																default-hidden-captions
-															/>
-														</div>
+													const player = (
+														<mux-player
+															playback-id={muxPlaybackId(video.mux)}
+															class="w-full rounded-lg"
+															stream-type="on-demand"
+															autoplay={showControls ? undefined : 'muted'}
+															loop={showControls ? undefined : true}
+															muted={showControls ? undefined : true}
+															default-hidden-captions
+														/>
 													);
+													if (video.backgroundImage) {
+														return (
+															<div
+																class="w-full rounded-lg bg-cover bg-center px-4 py-12 sm:py-20"
+																style={`background-image: url(${video.backgroundImage})`}
+															>
+																<div class="mx-auto w-full max-w-[900px] overflow-hidden rounded-lg">
+																	{player}
+																</div>
+															</div>
+														);
+													}
+													return <div class="w-full max-w-[600px] mx-auto">{player}</div>;
 												}
 												return typeof video === 'string' ? (
 													<video src={video} class={videoClass} playsinline {...attrs} />

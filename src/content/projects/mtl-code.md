@@ -24,6 +24,10 @@ sections:
       - /projects/mtl-code/branding-02.webp
       - /projects/mtl-code/branding-03.webp
       - /projects/mtl-code/branding-04.webp
+  - title: Web
+    videos:
+      - mux: ctpl7u57nivwJsSDH02HYeLsLePs4BU3pYSe2ciK4YmM
+        backgroundImage: /projects/web-bg.png
   - title: Social Media
     images:
       - /projects/mtl-code/socials-01.webp
