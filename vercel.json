@@ -169,6 +169,11 @@
       "source": "/safetyco",
       "destination": "https://gideonchrapko.com/?utm_source=safetyco&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/leo",
+      "destination": "https://gideonchrapko.com/?utm_source=leo&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
