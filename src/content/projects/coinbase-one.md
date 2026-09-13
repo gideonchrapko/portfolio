@@ -19,14 +19,19 @@ sections:
   - title: First Round Drafts
     videos:
       - mux: 00L902KGriw3mqrv00T02zIXF1mFGBpnVq5C8oAsBlAUWSM
+        backgroundImage: /projects/web-bg.png
       - mux: A8HpUBs1BO6k01F6sG01s9M91w6100WcCPSn38QBJt8RGs
+        backgroundImage: /projects/web-bg.png
   - title: Final Round Drafts
     videos:
       - mux: Dd9SiRJbuQwZiSZPyXuO005C9VeipnWDjO7KXhTcF5tM
+        backgroundImage: /projects/web-bg.png
       - mux: O1dZolO486sSvR802NEcfv73nGDKBc6CzaqV1b3hur4M
+        backgroundImage: /projects/web-bg.png
   - title: Final Mockup
     videos:
       - mux: m501Qp67BOc84HtuTTF8ou69JzSc1W0200sE7jY02tLPc2w
+        backgroundImage: /projects/web-bg.png
   - title: Lottie Animation
     lottie:
       - /projects/coinbase-one/coinbase-one-animation.json

@@ -41,6 +41,7 @@ sections:
       - /projects/fit21/takeover-02.webp
     videos:
       - mux: XBChD37axT8NgrLlp01u8pDwZoRAF2Vh8s202XmTaJVlE
+        backgroundImage: /projects/web-bg.png
   - title: Google Ads Campaign
     images:
       - /projects/fit21/ads-01.webp

@@ -30,7 +30,8 @@ sections:
         backgroundImage: /projects/web-bg.png
   - title: Social Media
     images:
-      - /projects/mtl-code/socials-01.webp
+      - src: /projects/mtl-code/socials-01.webp
+        fullWidth: true
   - title: Templating
     description: >
       Enter your information and see the template dynamically update. When you're finished generate your poster and see what you created. 

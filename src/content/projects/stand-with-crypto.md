@@ -41,8 +41,10 @@ sections:
     videos:
       - mp4: /projects/stand-with-crypto/cyclorama-1.mp4
         controls: true
+        backgroundImage: /projects/web-bg.png
       - mp4: /projects/stand-with-crypto/cyclorama-3.mp4
         controls: true
+        backgroundImage: /projects/web-bg.png
     images:
       - /projects/stand-with-crypto/cyclorama-2.webp
   - title: One-Pager

@@ -20,11 +20,13 @@ overview: The official Tay K website is an immersive hub for fans, built with Re
 images:
   - /projects/tayk-world/01.webp
   - /projects/tayk-world/02.webp
-  - /projects/tayk-world/03.webp
+  - src: /projects/tayk-world/03.webp
+    fullWidth: true
   - /projects/tayk-world/04.webp
 videos:
   - webm: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/output-tay.webm
     mp4: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/output-tay.mp4
+    backgroundImage: /projects/web-bg.png
 showVideoControls: false
 ---
 

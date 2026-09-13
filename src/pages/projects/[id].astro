@@ -36,7 +36,7 @@ const categorySlugs: CategorySlug[] = (
 		typeof slug === 'string' && slug in CATEGORIES
 );
 const shareDescription = description ?? overview?.slice(0, 160) ?? title;
-const shareImage = image ?? images?.[0] ?? undefined;
+const shareImage = image ?? (images?.[0] ? imageSrc(images[0]) : undefined);
 
 function sectionId(section: (typeof sections)[number]): string {
 	if (section.id) return section.id;
@@ -52,6 +52,31 @@ function muxPlaybackId(idOrUrl: string): string {
 		return match ? match[1] : idOrUrl;
 	}
 	return idOrUrl;
+}
+
+type ProjectImage = string | { src: string; fullWidth?: boolean };
+type ImageGroup = { full: true; src: string } | { full: false; items: string[] };
+
+function imageSrc(image: ProjectImage): string {
+	return typeof image === 'string' ? image : image.src;
+}
+
+function imageGroups(images: ProjectImage[]): ImageGroup[] {
+	const groups: ImageGroup[] = [];
+	let run: string[] = [];
+	for (const image of images) {
+		if (typeof image === 'object' && image.fullWidth) {
+			if (run.length) {
+				groups.push({ full: false, items: run });
+				run = [];
+			}
+			groups.push({ full: true, src: image.src });
+		} else {
+			run.push(imageSrc(image));
+		}
+	}
+	if (run.length) groups.push({ full: false, items: run });
+	return groups;
 }
 ---
 
@@ -164,14 +189,28 @@ function muxPlaybackId(idOrUrl: string): string {
 									}
 									return <div class="w-full max-w-[600px] mx-auto">{player}</div>;
 								}
-								return typeof video === 'string' ? (
-									<video src={video} class={videoClass} playsinline {...attrs} />
-								) : (
-									<video class={videoClass} playsinline {...attrs}>
-										{video.webm && <source type="video/webm" src={video.webm} />}
-										{video.mp4 && <source type="video/mp4" src={video.mp4} />}
-									</video>
-								);
+								const player =
+									typeof video === 'string' ? (
+										<video src={video} class={videoClass} playsinline {...attrs} />
+									) : (
+										<video class={videoClass} playsinline {...attrs}>
+											{video.webm && <source type="video/webm" src={video.webm} />}
+											{video.mp4 && <source type="video/mp4" src={video.mp4} />}
+										</video>
+									);
+								if (typeof video === 'object' && video.backgroundImage) {
+									return (
+										<div
+											class="w-full rounded-lg bg-cover bg-center px-4 py-12 sm:py-20"
+											style={`background-image: url(${video.backgroundImage})`}
+										>
+											<div class="mx-auto w-full max-w-[900px] overflow-hidden rounded-lg">
+												{player}
+											</div>
+										</div>
+									);
+								}
+								return player;
 							})}
 						</div>
 					) : null}
@@ -225,22 +264,32 @@ function muxPlaybackId(idOrUrl: string): string {
 											</a>
 										</p>
 									)}
-									{section.images?.length === 1 ? (
-										<div class="mt-12 flex justify-center">
-											<img
-												src={section.images[0]}
-												alt=""
-												class="w-full max-w-3xl rounded-lg object-contain"
-												loading="lazy"
-											/>
-										</div>
-									) : section.images?.length ? (
-										<div class="project-gallery mt-12">
-											{section.images.map((src) => (
-												<div class="project-gallery__item">
-													<img src={src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
-												</div>
-											))}
+									{section.images?.length ? (
+										<div class="mt-12 space-y-8">
+											{imageGroups(section.images).map((group) =>
+												group.full ? (
+													<div class="full-width">
+														<img src={group.src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
+													</div>
+												) : group.items.length === 1 ? (
+													<div class="flex justify-center">
+														<img
+															src={group.items[0]}
+															alt=""
+															class="w-full max-w-3xl rounded-lg object-contain"
+															loading="lazy"
+														/>
+													</div>
+												) : (
+													<div class="project-gallery">
+														{group.items.map((src) => (
+															<div class="project-gallery__item">
+																<img src={src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
+															</div>
+														))}
+													</div>
+												)
+											)}
 										</div>
 									) : null}
 									{section.videos?.length ? (
@@ -280,14 +329,28 @@ function muxPlaybackId(idOrUrl: string): string {
 													}
 													return <div class="w-full max-w-[600px] mx-auto">{player}</div>;
 												}
-												return typeof video === 'string' ? (
-													<video src={video} class={videoClass} playsinline {...attrs} />
-												) : (
-													<video class={videoClass} playsinline {...attrs}>
-														{video.webm && <source type="video/webm" src={video.webm} />}
-														{video.mp4 && <source type="video/mp4" src={video.mp4} />}
-													</video>
-												);
+												const player =
+													typeof video === 'string' ? (
+														<video src={video} class={videoClass} playsinline {...attrs} />
+													) : (
+														<video class={videoClass} playsinline {...attrs}>
+															{video.webm && <source type="video/webm" src={video.webm} />}
+															{video.mp4 && <source type="video/mp4" src={video.mp4} />}
+														</video>
+													);
+												if (typeof video === 'object' && video.backgroundImage) {
+													return (
+														<div
+															class="w-full rounded-lg bg-cover bg-center px-4 py-12 sm:py-20"
+															style={`background-image: url(${video.backgroundImage})`}
+														>
+															<div class="mx-auto w-full max-w-[900px] overflow-hidden rounded-lg">
+																{player}
+															</div>
+														</div>
+													);
+												}
+												return player;
 											})}
 										</div>
 									) : null}
@@ -337,12 +400,31 @@ function muxPlaybackId(idOrUrl: string): string {
 							))}
 						</div>
 					) : images?.length ? (
-						<div class="project-gallery">
-							{images.map((src) => (
-								<div class="project-gallery__item">
-									<img src={src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
-								</div>
-							))}
+						<div class="space-y-8">
+							{imageGroups(images).map((group) =>
+								group.full ? (
+									<div class="full-width">
+										<img src={group.src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
+									</div>
+								) : group.items.length === 1 ? (
+									<div class="flex justify-center">
+										<img
+											src={group.items[0]}
+											alt=""
+											class="w-full max-w-3xl rounded-lg object-contain"
+											loading="lazy"
+										/>
+									</div>
+								) : (
+									<div class="project-gallery">
+										{group.items.map((src) => (
+											<div class="project-gallery__item">
+												<img src={src} alt="" class="w-full h-auto rounded-lg" loading="lazy" />
+											</div>
+										))}
+									</div>
+								)
+							)}
 						</div>
 					) : null}
 				</div>
@@ -361,6 +443,9 @@ function muxPlaybackId(idOrUrl: string): string {
 
 <style>
 	mux-player {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
 		border-radius: 0.5rem;
 		overflow: hidden;
 	}
@@ -389,6 +474,9 @@ function muxPlaybackId(idOrUrl: string): string {
 	.project-gallery {
 		column-count: 2;
 		column-gap: 2rem;
+	}
+	.full-width {
+		width: 100%;
 	}
 	.project-gallery__item {
 		break-inside: avoid;

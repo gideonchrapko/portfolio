@@ -15,8 +15,10 @@ overview: For a school project, I created a sequence of two short videos to prom
 videos:
   - webm: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/napster-01.webm
     mp4: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/napster-01.mp4
+    backgroundImage: /projects/web-bg.png
   - webm: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/napster.webm
     mp4: https://pub-7b79a400a11f430189736f4884287c22.r2.dev/portfolio/napster.mp4
+    backgroundImage: /projects/web-bg.png
 showVideoControls: true
 ---
 

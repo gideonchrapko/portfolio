@@ -13,12 +13,20 @@ const mediaVideo = z.union([
 	}),
 ]);
 
+const projectImage = z.union([
+	z.string(),
+	z.object({
+		src: z.string(),
+		fullWidth: z.boolean().optional(),
+	}),
+]);
+
 const section = z.object({
 	id: z.string().optional(),
 	title: z.string(),
 	description: z.string().optional(),
 	link: z.string().optional(),
-	images: z.array(z.string()).optional(),
+	images: z.array(projectImage).optional(),
 	videos: z.array(mediaVideo).optional(),
 	pdf: z.string().optional(),
 	embed: z.string().optional(),
@@ -56,7 +64,7 @@ const projects = defineCollection({
 			url: z.string().optional(),
 			image: z.string().optional(),
 			overview: z.string().optional(),
-			images: z.array(z.string()).default([]),
+			images: z.array(projectImage).default([]),
 			videos: z.array(mediaVideo).default([]),
 			pdfs: z.array(z.string()).default([]),
 			showVideoControls: z.boolean().default(false),

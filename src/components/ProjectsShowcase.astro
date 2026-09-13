@@ -17,6 +17,11 @@ function titleize(slug: string): string {
 const tags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
 
 const HOVER_COLORS = ['#C8FF00', '#48BAF3', '#FFD400', '#00FFA6', '#FF00C3'];
+
+function imageSrc(image: string | { src: string } | undefined): string | undefined {
+	if (!image) return undefined;
+	return typeof image === 'string' ? image : image.src;
+}
 ---
 
 {
@@ -51,6 +56,7 @@ const HOVER_COLORS = ['#C8FF00', '#48BAF3', '#FFD400', '#00FFA6', '#FF00C3'];
 								? (raw as CategorySlug)
 								: FALLBACK_CATEGORY
 						);
+						const thumb = project.data.image ?? imageSrc(project.data.images?.[0]);
 						return (
 						<a
 							data-project-item
@@ -63,10 +69,10 @@ const HOVER_COLORS = ['#C8FF00', '#48BAF3', '#FFD400', '#00FFA6', '#FF00C3'];
 							class="group block"
 						>
 						{
-							(project.data.images?.[0] ?? project.data.image) && (
+							thumb && (
 								<div class="relative overflow-hidden rounded-lg bg-zinc-100">
 									<img
-										src={project.data.images?.[0] ?? project.data.image}
+										src={thumb}
 										alt=""
 										loading="lazy"
 										class="aspect-[3/2] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
