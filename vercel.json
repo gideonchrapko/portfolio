@@ -179,6 +179,11 @@
       "source": "/publicis-health",
       "destination": "https://gideonchrapko.com/?utm_source=publicis-health&utm_medium=application&utm_campaign=portfolio",
       "permanent": false
+    },
+    {
+      "source": "/venn",
+      "destination": "https://gideonchrapko.com/?utm_source=venn&utm_medium=application&utm_campaign=portfolio",
+      "permanent": false
     }
   ]
 }
